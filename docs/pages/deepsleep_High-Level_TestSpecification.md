@@ -2,16 +2,11 @@
 
 ## Table of Contents
 
-- [Deepsleep High Level Test Specification Document](#deepsleep-high-level-test-specification-document)
-  - [Table of Contents](#table-of-contents)
-  - [Acronyms, Terms and Abbreviations](#acronyms-terms-and-abbreviations)
-  - [Introduction](#introduction)
-  - [Module Description](#module-description)
-  - [L2 Test Specification](#l2-test-specification)
-  - [L3 Test Specification](#l3-test-specification)
-    - [Prerequisites](#prerequisites)
-    - [Feature List](#feature-list)
-    - [Test Cases](#test-cases)
+- [Acronyms, Terms and Abbreviations](#acronyms-terms-and-abbreviations)
+- [Introduction](#introduction)
+- [Module Description](#module-description)
+- [L2 Test Specification](#l2-test-specification)
+- [L3 Test Specification](#l3-test-specification)
 
 
 ## Acronyms, Terms and Abbreviations
