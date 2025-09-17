@@ -41,7 +41,7 @@ The Deepsleep HAL also provides APIs to set and get wake-up timers.
 
 |Test|Description|HAL APIs|
 |----|-----------|--------|
-|Get Deepsleep Capabilities|<ul><li>Read supported/prconfigured triggers of deepsleep using `IDeepSleep` class</li><li>Validate the list of `supportedTriggers[]` and `preconfiguredTriggers[]` to ensure all values match `hfp-deepsleep.yaml`.| `getCapabilities()`|
+|Get Deepsleep Capabilities|<ul><li>Read supported/preconfigured triggers of deepsleep using `IDeepSleep` class</li><li>Validate the list of `supportedTriggers[]` and `preconfiguredTriggers[]` to ensure all values match `hfp-deepsleep.yaml`.| `getCapabilities()`|
 |Enter Deep Sleep with TIMER Triggers|<ul><li>Pass TIMER triggers to `enterDeepSleep()` and validate that device returns the TIMER in `wokeUpByTriggers` param</li><li>Validate if the system clock has been adjusted to closely represent the actual elapsed time spent in deep sleep</li>|`enterDeepSleep()`|
 |Set and Get Deepsleep wakeup timer|Set the timer with various values and validate the same using get calls|`setWakeUpTimer()` `getWakeUpTimer()`|
 
@@ -59,7 +59,7 @@ The following table outlines the core features validated in the L3 test phase
 
 |#|Testing Feature|Description|Expected Scenrio|
 |-|---------------|-----------|----------------|
-|1|Verify the deepsleep wake up from supported triggers| <ul><li>Get the supported wakeup triggers</li><li>Trigger deepsleep, and trigger wake up from available supported triggers. Enum `WakeUpTrigger` represents the possible wakeup triggers</li>|Device should wake up from any of the trigger IR keypress/BT keypress/RF4CE keypress/Wake on magic packet/Powerkey/CEC signal/voiceor presence detection|
-|2|Verify no deepsleep wake up when triggered from unspecified triggers| Trigger deepsleep from a trigger which is not specified in `triggersToWakeUpon[]` param|Device should not wake up|
-|3|Verify the deepsleep wake up from pre-configured triggers| Trigger deepsleep without secifying the triggers in `triggersToWakeUpon[]`, and trigger wake up from any of `preconfiguredTriggers[]`|Wake on any of `preconfiguredTriggers[]`|
-|4|Verify the deepsleep wake up from mixed triggers| Trigger deepsleep by specifying multiple triggers in `triggersToWakeUpon[]`, and trigger wake up from any of the specified trigger| Device should wake up on any of the specified trigger|
+|1|Verify the deepsleep wake up from supported triggers| <ul><li>Get the supported wakeup triggers</li><li>Initiate deepsleep, and trigger wake up from available `supportedTriggers[]`. </li><li>Enum `WakeUpTrigger` represents the possible wakeup triggers</li><li>validate the wake up trigger received in `wokeUpByTriggers`</li>|Device should wake up from trigger specified in `triggersToWakeUpon[]`|
+|2|Verify no deepsleep wake up when triggered from unspecified triggers| Initiate deepsleep from a trigger which is not specified in `triggersToWakeUpon[]` param|Device should not wake up|
+|3|Verify the deepsleep wake up from pre-configured triggers| <ul><li>Initiate deepsleep without specifying the triggers in `triggersToWakeUpon[]`, and trigger wake up from any of `preconfiguredTriggers[]`</li><li>validate the wake up trigger received in `wokeUpByTriggers`</li>|Wake on any of `preconfiguredTriggers[]`|
+|4|Verify the deepsleep wake up from mixed triggers| <ul><li>Initiate deepsleep by specifying multiple triggers in `triggersToWakeUpon[]`, and trigger wake up from any of the specified trigger</li><li>validate the wake up trigger received in `wokeUpByTriggers`</li>| Device should wake up on any of the specified triggers|
