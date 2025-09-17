@@ -33,7 +33,7 @@ This document provides an overview of the testing requirements for the Deepsleep
 
 ## Module Description
 
-The Deepsleep `HAL` provides an interface to enable devices to enter a low-power standby state with support for configurable wake-up triggers such as timers, RCU (IR/BT), motion detection, network activity, and voice commands.
+The Deepsleep `HAL` provides an interface to enable devices to enter a low-power standby state with support for configurable wake-up triggers such as timers, RCU (IR/BT/RF4CE), frontpanel, motion detection, network activity, and voice commands.
 
 The Deepsleep HAL also provides APIs to set and get wake-up timers.
 
@@ -41,9 +41,9 @@ The Deepsleep HAL also provides APIs to set and get wake-up timers.
 
 |Test|Description|HAL APIs|
 |----|-----------|--------|
-|Set Deepsleep Capabilities|<ul><li>Read supported/prconfigured triggers of deepsleep using `IDeepSleep` class</li><li>Validate the list of `supportedTriggers[]` and `preconfiguredTriggers[]` to ensure all values match `hfp-deepsleep.yaml`.| `getCapabilities()`|
-|Enter Deep Sleep with TIMER Triggers|Pass TIMER triggers to `enterDeepSleep()` and validate that device enters/exits deep sleep successfully.|`enterDeepSleep()`|
-Set and Get Deepsleep wakeup timer|Set the timer with various values and validate the same using get calls|`setWakeUpTimer()` `getWakeUpTimer()`|
+|Get Deepsleep Capabilities|<ul><li>Read supported/prconfigured triggers of deepsleep using `IDeepSleep` class</li><li>Validate the list of `supportedTriggers[]` and `preconfiguredTriggers[]` to ensure all values match `hfp-deepsleep.yaml`.| `getCapabilities()`|
+|Enter Deep Sleep with TIMER Triggers|<ul><li>Pass TIMER triggers to `enterDeepSleep()` and validate that device returns the TIMER in `wokeUpByTriggers` param</li><li>Validate if the system clock has been adjusted to closely represent the actual elapsed time spent in deep sleep</li>|`enterDeepSleep()`|
+|Set and Get Deepsleep wakeup timer|Set the timer with various values and validate the same using get calls|`setWakeUpTimer()` `getWakeUpTimer()`|
 
 ## L3 Test Specification
 
@@ -53,40 +53,13 @@ The platform should have all relevant hardware interfaces (IR, BT, CEC, LAN, etc
 
 ### Feature List
 
-VTS L3 validates the deepsleep feature for all possible wakeup triggers and also combination of wakeup triggers.
+VTS L3 validates the deepsleep feature for all supported wakeup triggers and also combination of wakeup triggers.
 
 The following table outlines the core features validated in the L3 test phase
 
-|#|Testing Feature|Description|
-|-|---------------|-----------|
-|1|Verify the deepsleep wake up from IR| Trigger deepsleep, and trigger wake up from IR|
-|2|Verify the deepsleep wake up from Bluetooth| Trigger deepsleep, and trigger wake up from bluetooth|
-|3|Verify the deepsleep wake up from RF4CE| Trigger deepsleep, and trigger wake up from RF4CE|
-|4|Verify the deepsleep wake up from LAN|depsleep, and trigger wake up from LAN|
-|5|Verify the deepsleep wake up from WLAN| Trigger deepsleep, and trigger wake up from WLAN|
-|6|Verify the deepsleep wake up from TIMER|deepsleep, and trigger wake up from TIMER|
-|7|Verify the deepsleep wake up from FrontPanel| Trigger deepsleep, and trigger wake up from Power Key|
-|8|Verify the deepsleep wake up from CEC| deepsleep, and trigger wake up from CEC|
-|9|Verify the deepsleep wake up from Voice|Trigger deepsleep, and trigger wake up from voice up source| 
-|10|Verify the deepsleep wake up from Presence Detection| Trigger deepsleep, and trigger wake up from presence detection|
-|11|Verify the deepsleep wake up from per-configured triggers| Trigger deepsleep without secifying the trigger list, and trigger wake up from any of pre-configured trigger|
-|12|Verify the deepsleep wake up from mixed triggers| Trigger deepsleep, and trigger wake up from multiple trigger| 
-
-### Test Cases
-
-The table below summarizes the L3 tests executed using various wakeup triggers:
-
-|#|Test|TriggerUsed|Timer|KeycodeReturned|Expected Scenrio|
-|-|--------------|------|------|---------|----------|
-|1|RCU IR Wake|RCU_IR|✘|✔|Wake on IR press with `keyCode`|
-|2|RCU Bluetooth Wake|RCU_BT|✘|✔|Wake on BT press with `keyCode`|
-|3|RCU RF4CE Wake|RCU_RF4CE|✘|✔|Wake on RF4CE press with `keyCode`|
-|4|LAN Wake|LAN|✘|✘|Wake on magic packet|
-|5|WLAN Wake|WLAN|✘|✘|Wake on magic packet|
-|6|TIMER Wake|TIMER|✔|✘|Wake on TIMER elapsed|
-|7|FrontPanel Wake|FRONT_PANEL|✘|✘|Wake on Power key|
-|8|CEC Wake|CEC|✘|✘|Wake on CEC signal|
-|9|Voice source Wake|VOICE|✘|✘|Wake on voice detection|
-|10|Presence detection Wake|PRESENCE|✘|✘|Wake on presence detection|
-|11|Pre-configured trigger Wake|None|✘|✘|Wake on preconfigured trigger|
-|12|Mixed trigger Wake|RCU_BT, TIMER, FRONT_PANEL|✔|✔|Wake on any specified|
+|#|Testing Feature|Description|Expected Scenrio|
+|-|---------------|-----------|----------------|
+|1|Verify the deepsleep wake up from supported triggers| <ul><li>Get the supported wakeup triggers</li><li>Trigger deepsleep, and trigger wake up from available supported triggers. Enum `WakeUpTrigger` represents the possible wakeup triggers</li>|Device should wake up from any of the trigger IR keypress/BT keypress/RF4CE keypress/Wake on magic packet/Powerkey/CEC signal/voiceor presence detection|
+|2|Verify no deepsleep wake up when triggered from unspecified triggers| Trigger deepsleep from a trigger which is not specified in `triggersToWakeUpon[]` param|Device should not wake up|
+|3|Verify the deepsleep wake up from pre-configured triggers| Trigger deepsleep without secifying the triggers in `triggersToWakeUpon[]`, and trigger wake up from any of `preconfiguredTriggers[]`|Wake on any of `preconfiguredTriggers[]`|
+|4|Verify the deepsleep wake up from mixed triggers| Trigger deepsleep by specifying multiple triggers in `triggersToWakeUpon[]`, and trigger wake up from any of the specified trigger| Device should wake up on any of the specified trigger|
