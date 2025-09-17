@@ -28,8 +28,8 @@
 
 This document provides an overview of the testing requirements for the Deepsleep module. It outlines the scope of testing, objectives, testing levels and approaches, specific test requirements, and expected deliverables.
 
-- Deepsleep Interface Definitions - [Deepsleep HAL](https://github.com/rdkcentral/rdk-halif-aidl/tree/v0.6/deepsleep/current/com/rdk/hal/deepsleep)
--   Deeplslep Overview - [Deepsleep Overview](https://wiki.rdkcentral.com/display/RDKHAL/Audio+Sink)
+- Deepsleep Interface Definitions - [Deepsleep HAL](https://github.com/rdkcentral/rdk-halif-aidl/tree/main/deepsleep/current/com/rdk/hal/deepsleep)
+- Deepsleep `HAL` Feature Profile - [hfp-deepsleep.yaml](https://github.com/rdkcentral/rdk-halif-aidl/blob/main/deepsleep/current/hfp-deepsleep.yaml)
 
 ## Module Description
 
