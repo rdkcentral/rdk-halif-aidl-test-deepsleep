@@ -34,19 +34,12 @@
 
 typedef struct deepSleepConfig
 {
-    std::string rcu_ir;
-    std::string rcu_bt;
-    std::string rcu_rf4ce;
-    std::string lan;
-    std::string wan;
-    std::string timer;
-    std::string frontpanel;
-    std::string cec;
-    std::string presence;
-    std::string voice;
+    std::vector<::com::rdk::hal::deepsleep::WakeUpTrigger> supportedValues;
+    std::vector<::com::rdk::hal::deepsleep::WakeUpTrigger> preconfiguredValues;
 } deepSleepConfig_t;
 
 extern deepSleepConfig_t gDeepSleepConfig;
+static uint32_t gTimer = -1;
 
 void vcomponent_DeepSleep_parse_config(char *configurationFile);
 void vcomponent_DeepSleep_initialize_ControlPlane();

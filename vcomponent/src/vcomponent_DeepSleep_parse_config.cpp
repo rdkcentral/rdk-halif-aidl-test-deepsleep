@@ -146,34 +146,38 @@ void vcomponent_DeepSleep_parse_config(char *configurationFile)
 
     deepSleepConfig_t devConfig = {};
 
+    const std::vector<std::string> triggerKeys = {
+        "RCU_IR", "RCU_BT", "RCU_RF4CE", "LAN", "WLAN",
+        "TIMER", "FRONT_PANEL", "CEC", "PRESENCE", "VOICE"
+    };
     // Example of reading a string value from the configuration file
-    prefix = "deep_sleep/supportedTriggers/";
-    char value[256];
-    memset(value, 0, sizeof(value));
+    prefix = "IDeepSleep/supportedTriggers/";
 
-    devConfig.rcu_ir = ut_kvp_getStringField(instance, (prefix + "RCU_IR").c_str(), value, sizeof(value));
-    devConfig.rcu_bt = ut_kvp_getStringField(instance, (prefix + "RCU_BT").c_str(), value, sizeof(value));
-    devConfig.rcu_rf4ce = ut_kvp_getStringField(instance, (prefix + "RCU_RF4CE").c_str(), value, sizeof(value));
-    devConfig.lan = ut_kvp_getStringField(instance, (prefix + "LAN").c_str(), value, sizeof(value));
-    devConfig.wan = ut_kvp_getStringField(instance, (prefix + "WLAN").c_str(), value, sizeof(value));
-    devConfig.timer = ut_kvp_getStringField(instance, (prefix + "TIMER").c_str(), value, sizeof(value));
-    devConfig.frontpanel = ut_kvp_getStringField(instance, (prefix + "FRONT_PANEL").c_str(), value, sizeof(value));
-    devConfig.cec = ut_kvp_getStringField(instance, (prefix + "CEC").c_str(), value, sizeof(value));
-    devConfig.presence = ut_kvp_getStringField(instance, (prefix + "PRESENCE").c_str(), value, sizeof(value));
-    devConfig.voice = ut_kvp_getStringField(instance, (prefix + "VOICE").c_str(), value, sizeof(value));
+    for (const auto& key : triggerKeys) {
+        std::string fullPath = prefix + key;
+        if (ut_kvp_fieldPresent(instance, fullPath.c_str())) {
+            uint32_t value = ut_kvp_getUInt32Field(instance, fullPath.c_str());
+            UT_LOG_INFO("supportedTriggers value:%d", value);
+            devConfig.supportedValues.push_back(static_cast<::com::rdk::hal::deepsleep::WakeUpTrigger>(value));
+        } else {
+            UT_LOG_DEBUG("key not found in yaml, continue");
+        }
+      }
+
+    prefix = "IDeepSleep/preconfiguredTriggers/";
+
+    for (const auto& key : triggerKeys) {
+        std::string fullPath = prefix + key;
+        if (ut_kvp_fieldPresent(instance, fullPath.c_str())) {
+            uint32_t value = ut_kvp_getUInt32Field(instance, fullPath.c_str());
+            UT_LOG_INFO("preconfiguredTriggers value:%d", value);
+            devConfig.preconfiguredValues.push_back(static_cast<::com::rdk::hal::deepsleep::WakeUpTrigger>(value));
+        } else {
+            UT_LOG_DEBUG("key not found in yaml, continue");
+        }
+      }
 
     gDeepSleepConfig = devConfig;
-    // if(ut_kvp_getStringField(instance, fullKey.c_str(), value, sizeof(value)) == UT_KVP_STATUS_SUCCESS)
-    // {
-    //     UT_LOG("[VCOMPONENT_DEEPSLEEP] %s: %s", fullKey.c_str(), value);
-    // }
-    // else
-    // {
-    //     UT_LOG_ERROR("[VCOMPONENT_DEEPSLEEP] Failed to read %s from configuration file", fullKey.c_str());
-    // }
-    // UT_LOG("[VCOMPONENT_DEEPSLEEP]Reading configuration for key: %s, value:  %s", fullKey.c_str(), value);
-
-    // Add more keys as needed following the above pattern
 
     vcomponent_DeepSleep_kvp_destroy_instance(instance);
 }

@@ -1,12 +1,17 @@
-deep_sleep:                 # Component object begins
+IDeepSleep:                 # Component object begins
     supportedTriggers:
-        RCU_IR : "Deepsleep Wakup by RCU IR key"
-        RCU_BT : "Deepsleep Wakup by RCU BT key"
-        RCU_RF4CE : "Deepsleep Wakup by RCU RF4CE key"
-        LAN : "Deepsleep Wakup by magic packets"
-        WLAN : "Deepsleep Wakup by magic packets"
-        TIMER : "Deepsleep Wakup by timer elapsed"
-        FRONT_PANEL : "Deepsleep Wakup by power key"
-        CEC : "Deepsleep Wakup by CEC signal"
-        PRESENCE : "Deepsleep Wakup by presence detection"
-        VOICE : "Deepsleep Wakup by voice detection"
+        RCU_IR : 0
+        RCU_BT : 1
+        RCU_RF4CE : 2
+        LAN : 3
+        WLAN : 4
+        TIMER : 5
+        FRONT_PANEL : 6
+        CEC : 7
+        PRESENCE : 8
+        VOICE : 9
+    preconfiguredTriggers:
+        RCU_IR : 0
+        RCU_BT : 1
+        TIMER : 5
+        FRONT_PANEL : 6

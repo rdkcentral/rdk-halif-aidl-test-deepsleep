@@ -50,35 +50,118 @@ namespace com
                         return android::binder::Status::fromExceptionCode(android::binder::Status::EX_ILLEGAL_ARGUMENT);
                     }
                     *_aidl_return = Capabilities();
-                    _aidl_return->supportedTriggers.push_back(::com::rdk::hal::deepsleep::WakeUpTrigger::RCU_IR);
-                    _aidl_return->supportedTriggers.push_back(::com::rdk::hal::deepsleep::WakeUpTrigger::RCU_BT);
-                    _aidl_return->supportedTriggers.push_back(::com::rdk::hal::deepsleep::WakeUpTrigger::LAN);
-                    _aidl_return->supportedTriggers.push_back(::com::rdk::hal::deepsleep::WakeUpTrigger::WLAN);
-                    _aidl_return->supportedTriggers.push_back(::com::rdk::hal::deepsleep::WakeUpTrigger::TIMER);
-                    _aidl_return->supportedTriggers.push_back(::com::rdk::hal::deepsleep::WakeUpTrigger::FRONT_PANEL);
-                    _aidl_return->supportedTriggers.push_back(::com::rdk::hal::deepsleep::WakeUpTrigger::CEC);
-                    _aidl_return->supportedTriggers.push_back(::com::rdk::hal::deepsleep::WakeUpTrigger::PRESENCE);
-                    _aidl_return->supportedTriggers.push_back(::com::rdk::hal::deepsleep::WakeUpTrigger::VOICE);
-                    _aidl_return->preconfiguredTriggers.push_back(::com::rdk::hal::deepsleep::WakeUpTrigger::RCU_IR);
-                    _aidl_return->preconfiguredTriggers.push_back(::com::rdk::hal::deepsleep::WakeUpTrigger::RCU_BT);
-                    _aidl_return->preconfiguredTriggers.push_back(::com::rdk::hal::deepsleep::WakeUpTrigger::TIMER);
-                    _aidl_return->preconfiguredTriggers.push_back(::com::rdk::hal::deepsleep::WakeUpTrigger::FRONT_PANEL);
+                    _aidl_return->supportedTriggers = gDeepSleepConfig.supportedValues;
+                    _aidl_return->preconfiguredTriggers = gDeepSleepConfig.preconfiguredValues;
                     return ::android::binder::Status::ok();
                 }
 
                 ::android::binder::Status DeepSleep::enterDeepSleep(const ::std::vector<WakeUpTrigger>& triggersToWakeUpon, ::std::vector<WakeUpTrigger>* wokeUpByTriggers, ::std::optional<KeyCode>* keyCode, bool* _aidl_return)
                 {
-                    *_aidl_return = true;
+                    UT_LOG_INFO("wakeup duration : %d\n", gTimer);
+                    WakeUpTrigger trigger = WakeUpTrigger::ERROR_UNKNOWN;
+                    if (triggersToWakeUpon.empty()) {
+                        if (gDeepSleepConfig.preconfiguredValues.empty()) {
+                            UT_LOG_INFO("Both triggersToWakeUpon and preconfiguredValues list are empty\n");
+                            *_aidl_return = false;
+                            return ::android::binder::Status::ok();
+                        } else {
+                            trigger = gDeepSleepConfig.preconfiguredValues[0];
+                        }
+                    } else {
+                        trigger = triggersToWakeUpon[0];
+                    }
+
+                    bool result = false;
+                    *keyCode = std::nullopt;
+                    wokeUpByTriggers->clear();
+                    KeyCode k;           // create a KeyCode instance
+                    std::vector<WakeUpTrigger> triggerlist;
+
+                    switch (trigger) {
+                        case WakeUpTrigger::RCU_IR:
+                            UT_LOG_INFO("Trigger: RCU_IR\n");
+                            k.keyCode = 0;
+                            triggerlist.push_back(WakeUpTrigger::RCU_IR);
+                            *keyCode = k;
+                            result = true;
+                            break;
+                        case WakeUpTrigger::RCU_BT:
+                            UT_LOG_INFO("Trigger: RCU_BT\n");
+                            k.keyCode = 1;
+                            triggerlist.push_back(WakeUpTrigger::RCU_BT);
+                            *keyCode = k;
+                            result = true;
+                            break;
+                        case WakeUpTrigger::RCU_RF4CE:
+                            UT_LOG_INFO("Trigger: RCU_RF4CE\n");
+                            k.keyCode = 2;
+                            triggerlist.push_back(WakeUpTrigger::RCU_RF4CE);
+                            *keyCode = k;
+                            result = true;
+                            break;
+                        case WakeUpTrigger::LAN:
+                            UT_LOG_INFO("Trigger: LAN\n");
+                            triggerlist.push_back(WakeUpTrigger::LAN);
+                            result = true;
+                            break;
+                        case WakeUpTrigger::WLAN:
+                            UT_LOG_INFO("Trigger: WLAN\n");
+                            triggerlist.push_back(WakeUpTrigger::WLAN);
+                            result = true;
+                            break;
+                        case WakeUpTrigger::TIMER:
+                            if (gTimer > 0) {
+                                sleep(gTimer);
+                                UT_LOG_INFO("Trigger: TIMER\n");
+                                triggerlist.push_back(WakeUpTrigger::TIMER);
+                                result = true;
+                            }
+                            break;
+                        case WakeUpTrigger::FRONT_PANEL:
+                            UT_LOG_INFO("Trigger: FRONT_PANEL\n");
+                            triggerlist.push_back(WakeUpTrigger::FRONT_PANEL);
+                            result = true;
+                            break;
+                        case WakeUpTrigger::CEC:
+                            UT_LOG_INFO("Trigger: CEC\n");
+                            triggerlist.push_back(WakeUpTrigger::CEC);
+                            result = true;
+                            break;
+                        case WakeUpTrigger::PRESENCE:
+                            UT_LOG_INFO("Trigger: PRESENCE\n");
+                            triggerlist.push_back(WakeUpTrigger::PRESENCE);
+                            result = true;
+                            break;
+                        case WakeUpTrigger::VOICE:
+                            UT_LOG_INFO("Trigger: VOICE\n");
+                            triggerlist.push_back(WakeUpTrigger::VOICE);
+                            result = true;
+                            break;
+                        case WakeUpTrigger::ERROR_UNKNOWN:
+                        default:
+                            UT_LOG_INFO("Trigger: UNKNOWN or invalid (%d)\n", static_cast<int>(trigger));
+                            triggerlist.push_back(WakeUpTrigger::ERROR_UNKNOWN);
+                            result = false;
+                            break;
+                    }
+                    *wokeUpByTriggers = triggerlist;
+                    *_aidl_return = result;
                     return ::android::binder::Status::ok();
                 }
+
                 ::android::binder::Status DeepSleep::setWakeUpTimer(int32_t seconds, bool* _aidl_return)
                 {
-                    *_aidl_return = true;
+                    bool result = false;
+                    if ((seconds > 0) && (seconds < 604801)) {
+                        gTimer = seconds;
+                        result = true;
+                    }
+                    *_aidl_return = result;
                     return ::android::binder::Status::ok();
                 }
                 ::android::binder::Status DeepSleep::getWakeUpTimer(int32_t* _aidl_return)
                 {
-                    *_aidl_return = 10;
+                    *_aidl_return = gTimer;
                     return ::android::binder::Status::ok();
                 }
 

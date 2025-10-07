@@ -100,7 +100,7 @@ using namespace com::rdk::hal::deepsleep;
 #define DEEPSLEEP_GET_CAPABILITY(deepsleepHandle, capabilities) \
     do { \
         ::android::binder::Status status; \
-        UT_LOG_DEBUG("Calling getState(OUT:capabilities[]"); \
+        UT_LOG_DEBUG("Calling getCapabilities(OUT:capabilities[]"); \
         status = (deepsleepHandle)->getCapabilities(&capabilities); \
         UT_LOG_DEBUG("Result getCapabilities(OUT:caps), status:[isOK:%s, exception:%s]", \
                 UT_Control_GetMapString(bool_mapTable_deepsleep, status.isOk()), \
@@ -109,46 +109,42 @@ using namespace com::rdk::hal::deepsleep;
         UT_ASSERT_TRUE(status.isOk()); \
         UT_ASSERT_EQUAL(status.exceptionCode(), Status::EX_NONE); \
     } while (0)
-#if 0
-#define DEEPSLEEP_OPEN_SUCCESS(deepsleepHandle, controllerListener, hdmiCecController, stateCheck) \
+
+#define DEEPSLEEP_SET_TIMER(deepsleepHandle, seconds, result) \
     do { \
-        android::binder::Status status; \
-        \
-        /* Open the Decoder */ \
-        UT_LOG_DEBUG("Calling open(IN:controllerListener[%p], OUT:hdmiCecController[])", controllerListener); \
-        status = (deepsleepHandle)->open(controllerListener, &hdmiCecController); \
-        UT_LOG_DEBUG("Result open(IN:IN:controllerListener[%p], OUT:hdmiCecController[0x%X]), status:[isOK:%s, exception:%s]", \
-            controllerListener, hdmiCecController.get(), \
-            UT_Control_GetMapString(bool_mapTable_cec, status.isOk()), \
-            UT_Control_GetMapString(statusHdmiCecException_mapTable, status.exceptionCode())); \
-        UT_ASSERT_TRUE_FATAL(status.isOk()); \
-        UT_ASSERT_NOT_EQUAL_FATAL(hdmiCecController.get(), nullptr); \
-        UT_ASSERT_EQUAL_FATAL(status.exceptionCode(), Status::EX_NONE); \
-        \
-        if (stateCheck) \
-        { \
-            com::rdk::hal::State lastState; \
-            DEEPSLEEP_WAIT_FOR_STATE(deepsleepHandle, State::STARTED, lastState); \
-            UT_ASSERT_EQUAL_FATAL(lastState, State::STARTED); \
-        } \
+        ::android::binder::Status status; \
+        UT_LOG_DEBUG("Calling setWakeUpTimer(IN:seconds[%d], OUT:result[])", seconds); \
+        status = (deepsleepHandle)->setWakeUpTimer(seconds, &result); \
+        UT_LOG_DEBUG("Result setWakeUpTimer(IN:seconds[%d], OUT:result[%d]), status:[isOK:%s, exception:%s]", \
+                seconds, result, UT_Control_GetMapString(bool_mapTable_deepsleep, status.isOk()), \
+                UT_Control_GetMapString(statusDeepSleepException_mapTable, status.exceptionCode())); \
+        UT_ASSERT_TRUE(status.isOk()); \
+        UT_ASSERT_EQUAL(status.exceptionCode(), Status::EX_NONE); \
     } while (0)
 
-#define DEEPSLEEP_OPEN_FAILURE(deepsleepHandle, controllerListener, hdmiCecController, exception) \
+#define DEEPSLEEP_GET_TIMER(deepsleepHandle, seconds) \
     do { \
-        android::binder::Status status; \
-        \
-        /* Open the Decoder */ \
-        UT_LOG_DEBUG("Calling open(IN:controllerListener[%p], OUT:hdmiCecController[])", controllerListener); \
-        status = (deepsleepHandle)->open(controllerListener, &hdmiCecController); \
-        UT_LOG_DEBUG("Result open(IN:IN:controllerListener[%p], OUT:hdmiCecController[0x%X]), status:[isOK:%s, exception:%s]", \
-            controllerListener, hdmiCecController.get(), \
-            UT_Control_GetMapString(bool_mapTable_cec, status.isOk()), \
-            UT_Control_GetMapString(statusHdmiCecException_mapTable, status.exceptionCode())); \
-        UT_ASSERT_FALSE(status.isOk()); \
-        UT_ASSERT_EQUAL(status.exceptionCode(), exception); \
-        UT_ASSERT_EQUAL(hdmiCecController.get(), nullptr); \
+        ::android::binder::Status status; \
+        UT_LOG_DEBUG("Calling getWakeUpTimer(OUT:seconds[])"); \
+        status = (deepsleepHandle)->getWakeUpTimer(&seconds); \
+        UT_LOG_DEBUG("Result getWakeUpTimer(OUT:seconds[%d]), status:[isOK:%s, exception:%s]", \
+                seconds, UT_Control_GetMapString(bool_mapTable_deepsleep, status.isOk()), \
+                UT_Control_GetMapString(statusDeepSleepException_mapTable, status.exceptionCode())); \
+        UT_ASSERT_TRUE(status.isOk()); \
+        UT_ASSERT_EQUAL(status.exceptionCode(), Status::EX_NONE); \
     } while (0)
-#endif
+
+#define DEEPSLEEP_ENTERDEEPSLEEP(deepsleepHandle, triggersToWakeUpon, wokeUpByTriggers, KeyCode, result) \
+    do { \
+        ::android::binder::Status status; \
+        UT_LOG_DEBUG("Calling enterDeepSleep(IN:triggersToWakeUpon[size=%d], OUT:wokeUpByTriggers[], OUT:KeyCode[], OUT:result[])", triggersToWakeUpon.size()); \
+        status = (deepsleepHandle)->enterDeepSleep(triggersToWakeUpon, &wokeUpByTriggers, &KeyCode, &result); \
+        UT_LOG_DEBUG("Result enterDeepSleep(IN:triggersToWakeUpon[size=%d], OUT:wokeUpByTriggers[size=%d], OUT:KeyCode[], OUT:result[%d]), status:[isOK:%s, exception:%s]", \
+                triggersToWakeUpon.size(), wokeUpByTriggers.size(), result, UT_Control_GetMapString(bool_mapTable_deepsleep, status.isOk()), \
+                UT_Control_GetMapString(statusDeepSleepException_mapTable, status.exceptionCode())); \
+        UT_ASSERT_TRUE(status.isOk()); \
+        UT_ASSERT_EQUAL(status.exceptionCode(), Status::EX_NONE); \
+    } while (0)
 
 #endif // __VTS_DEEPSLEEP_H__
 
