@@ -102,10 +102,10 @@ using namespace com::rdk::hal::deepsleep;
         ::android::binder::Status status; \
         UT_LOG_DEBUG("Calling getCapabilities(OUT:capabilities[]"); \
         status = (deepsleepHandle)->getCapabilities(&capabilities); \
-        UT_LOG_DEBUG("Result getCapabilities(OUT:caps), status:[isOK:%s, exception:%s]", \
+        UT_LOG_DEBUG("Result getCapabilities(OUT:caps), status:[isOK:%s, exception:%s]\n", \
                 UT_Control_GetMapString(bool_mapTable_deepsleep, status.isOk()), \
                 UT_Control_GetMapString(statusDeepSleepException_mapTable, status.exceptionCode())); \
-        UT_LOG_DEBUG("Capabilities supportedTriggers size: %zu, preconfiguredTriggers size:%zu", caps.supportedTriggers.size(), caps.preconfiguredTriggers.size()); \
+        UT_LOG_DEBUG("Capabilities supportedTriggers size: %zu, preconfiguredTriggers size:%zu\n", caps.supportedTriggers.size(), caps.preconfiguredTriggers.size()); \
         UT_ASSERT_TRUE(status.isOk()); \
         UT_ASSERT_EQUAL(status.exceptionCode(), Status::EX_NONE); \
     } while (0)

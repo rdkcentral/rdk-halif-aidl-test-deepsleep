@@ -98,6 +98,7 @@ using namespace com::rdk::hal::deepsleep;
 
 extern const ut_control_keyStringMapping_t bool_mapTable_deepsleep[];
 extern const ut_control_keyStringMapping_t statusDeepSleepException_mapTable[];
+extern WakeUpTrigger stringToWakeUpTrigger(const std::string& str);
 
 std::string vecIntToString(std::vector<int32_t>& addrs);
 std::string vecByteToHexString(const std::vector<uint8_t>& data);

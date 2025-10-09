@@ -2,6 +2,7 @@
 
 IDeepSleep:                 # Component object begins
     interfaceVersion: current
+    bufferduration : 5
     supportedTriggers:
         - RCU_IR
         - RCU_BT
