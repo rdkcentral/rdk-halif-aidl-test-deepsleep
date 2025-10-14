@@ -112,7 +112,7 @@ UT_ADD_TEST(VTS_L2_DEEPSLEEP, test_getCapablities)
     for (size_t i = 0; i < supportedcount; i++) {
         std::string key_string = "IDeepSleep.supportedTriggers." + std::to_string(i);
         char trigger[256] = {0};
-        UT_KVP_PROFILE_GET_STRING(key_string.c_str(), trigger)
+        UT_KVP_PROFILE_GET_STRING(key_string.c_str(), trigger);
         if (trigger[0] != '\0') {
             WakeUpTrigger triggerenum = stringToWakeUpTrigger(trigger);
             if (!(std::find(caps.supportedTriggers.begin(), caps.supportedTriggers.end(), triggerenum) != caps.supportedTriggers.end())) {
@@ -131,7 +131,7 @@ UT_ADD_TEST(VTS_L2_DEEPSLEEP, test_getCapablities)
         //UT_KVP_PROFILE_GET_STRING(key_string, trigger);
         std::string key_string = "IDeepSleep.preconfiguredTriggers." + std::to_string(i);
         char trigger[256] = {0};
-        UT_KVP_PROFILE_GET_STRING(key_string.c_str(), trigger)
+        UT_KVP_PROFILE_GET_STRING(key_string.c_str(), trigger);
         if (trigger[0] != '\0') {
             WakeUpTrigger triggerenum = stringToWakeUpTrigger(trigger);
             if (!(std::find(caps.preconfiguredTriggers.begin(), caps.preconfiguredTriggers.end(), triggerenum) != caps.preconfiguredTriggers.end())) {
