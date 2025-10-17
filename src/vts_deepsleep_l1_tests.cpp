@@ -78,7 +78,7 @@ public:
 
     void SetUp() override
     {
-        // android::ProcessState::self()->startThreadPool();
+        android::ProcessState::self()->startThreadPool();
     }
 
     void TearDown() override
@@ -86,102 +86,114 @@ public:
     }
 };
 
-UT_ADD_TEST(VTS_L1_DEEPSLEEP, l1_getCaps_pos)
+UT_ADD_TEST(VTS_L1_DEEPSLEEP, getCaps_pos)
 {
     com::rdk::hal::deepsleep::Capabilities caps;
     DEEPSLEEP_GET_CAPABILITY(gDEEPSLEEPHandle, caps);
-    UT_ASSERT_EQUAL(caps.supportedTriggers.size(), UT_KVP_PROFILE_GET_LIST_COUNT("IDeepSleep.supportedTriggers"));
-    UT_ASSERT_EQUAL(caps.preconfiguredTriggers.size(), UT_KVP_PROFILE_GET_LIST_COUNT("IDeepSleep.preconfiguredTriggers"));
+    // Validate that the output parameter has been populated.
+    UT_ASSERT_TRUE(!caps.supportedTriggers.empty());
+    UT_ASSERT_TRUE(!caps.preconfiguredTriggers.empty());
+    size_t supportedcount = UT_KVP_PROFILE_GET_LIST_COUNT("IDeepSleep.supportedTriggers");
+    size_t preconfiguredcount = UT_KVP_PROFILE_GET_LIST_COUNT("IDeepSleep.preconfiguredTriggers");
+    // Verify that every preconfigured trigger is a member of supportedTriggers.
+    for (auto mandTrigger : caps.preconfiguredTriggers) {
+        UT_ASSERT_NOT_EQUAL(std::find(caps.supportedTriggers.begin(), caps.supportedTriggers.end(), mandTrigger),
+                  caps.supportedTriggers.end());
+    }
+
+    UT_ASSERT_EQUAL(caps.supportedTriggers.size(), supportedcount);
+    for (size_t i = 0; i < supportedcount; i++) {
+        bool result = false;
+        std::string key_string = "IDeepSleep.supportedTriggers." + std::to_string(i);
+        char trigger[256] = {0};
+        UT_KVP_PROFILE_GET_STRING(key_string.c_str(), trigger);
+        if (trigger[0] != '\0') {
+            for (auto x : caps.supportedTriggers) {
+                std::string triggerstr = toString(x);
+                if (trigger == triggerstr) {
+                    result = true;
+                    break;
+                }
+            }
+            if (!result) {
+                UT_LOG_DEBUG("Trigger %s mismatch in supported list\n", trigger);
+            }
+            UT_ASSERT_TRUE(result);
+        }
+    }
+
+    UT_ASSERT_EQUAL(caps.preconfiguredTriggers.size(), preconfiguredcount);
+    for (size_t i = 0; i < preconfiguredcount; i++) {
+        bool result = false;
+        std::string key_string = "IDeepSleep.preconfiguredTriggers." + std::to_string(i);
+        char trigger[256] = {0};
+        UT_KVP_PROFILE_GET_STRING(key_string.c_str(), trigger);
+        if (trigger[0] != '\0') {
+            for (auto x : caps.preconfiguredTriggers) {
+                std::string triggerstr = toString(x);
+                if (trigger == triggerstr) {
+                    result = true;
+                    break;
+                }
+            }
+            if (!result) {
+                UT_LOG_DEBUG("Trigger %s mismatch in preconfigured list\n", trigger);
+            }
+            UT_ASSERT_TRUE(result);
+        }
+    }
     return;
 }
 
-UT_ADD_TEST(VTS_L1_DEEPSLEEP, l1_gettimer_pos)
+UT_ADD_TEST(VTS_L1_DEEPSLEEP, gettimer_pos)
 {
-    com::rdk::hal::deepsleep::Capabilities caps;
-    DEEPSLEEP_GET_CAPABILITY(gDEEPSLEEPHandle, caps);
-    if (!(std::find(caps.supportedTriggers.begin(), caps.supportedTriggers.end(), WakeUpTrigger::TIMER) != caps.supportedTriggers.end())){
-        if (!(std::find(caps.preconfiguredTriggers.begin(), caps.preconfiguredTriggers.end(), WakeUpTrigger::TIMER) != caps.preconfiguredTriggers.end())){
-            UT_LOG_INFO("TIMER trigger is not supported");
-            return;
-        }
-    }
     int32_t time;
     DEEPSLEEP_GET_TIMER(gDEEPSLEEPHandle, time);
     UT_ASSERT_EQUAL(time, -1);
     return;
 }
 
-UT_ADD_TEST(VTS_L1_DEEPSLEEP, l1_settimer_pos)
+UT_ADD_TEST(VTS_L1_DEEPSLEEP, settimer_pos)
 {
     com::rdk::hal::deepsleep::Capabilities caps;
+    bool result;
+    bool supported = true;
     DEEPSLEEP_GET_CAPABILITY(gDEEPSLEEPHandle, caps);
     if (!(std::find(caps.supportedTriggers.begin(), caps.supportedTriggers.end(), WakeUpTrigger::TIMER) != caps.supportedTriggers.end())) {
-        if (!(std::find(caps.preconfiguredTriggers.begin(), caps.preconfiguredTriggers.end(), WakeUpTrigger::TIMER) != caps.preconfiguredTriggers.end())){
-            UT_LOG_INFO("TIMER trigger is not supported");
-            return;
+        UT_LOG_INFO("TIMER trigger is not supported");
+        supported = false;
+    }
+    std::vector<int32_t> secondsValues = {604800, 3600, 1};
+    for (const auto& time : secondsValues) {
+        DEEPSLEEP_SET_TIMER(gDEEPSLEEPHandle, time, result);
+        if (supported) {
+            UT_ASSERT_TRUE(result);
+        } else {
+            UT_ASSERT_FALSE(result);
         }
     }
-    int32_t time = 604800; //7 days max value
-    bool result = false;
-    DEEPSLEEP_SET_TIMER(gDEEPSLEEPHandle, time, result);
-    UT_ASSERT_TRUE(result);
-    time = 10;
-    DEEPSLEEP_SET_TIMER(gDEEPSLEEPHandle, time, result);
-    UT_ASSERT_TRUE(result);
-    time = 1;
-    DEEPSLEEP_SET_TIMER(gDEEPSLEEPHandle, time, result);
-    UT_ASSERT_TRUE(result);
     return;
 }
 
-UT_ADD_TEST(VTS_L1_DEEPSLEEP, l1_settimer_neg)
+UT_ADD_TEST(VTS_L1_DEEPSLEEP, settimer_neg)
 {
-    com::rdk::hal::deepsleep::Capabilities caps;
-    DEEPSLEEP_GET_CAPABILITY(gDEEPSLEEPHandle, caps);
-    if (!(std::find(caps.supportedTriggers.begin(), caps.supportedTriggers.end(), WakeUpTrigger::TIMER) != caps.supportedTriggers.end())){
-        if (!(std::find(caps.preconfiguredTriggers.begin(), caps.preconfiguredTriggers.end(), WakeUpTrigger::TIMER) != caps.preconfiguredTriggers.end())){
-            UT_LOG_INFO("TIMER trigger is not supported");
-            return;
-        }
+    bool result;
+    std::vector<int32_t> secondsValues = {0, -1, -10};
+    for (const auto& time : secondsValues) {
+        DEEPSLEEP_SET_TIMER(gDEEPSLEEPHandle, time, result);
+        UT_ASSERT_FALSE(result);
     }
-    int32_t time = 0;
-    bool result = false;
-    DEEPSLEEP_SET_TIMER(gDEEPSLEEPHandle, time, result);
-    UT_ASSERT_FALSE(result);
-    time = 604801; // more than max value
-    DEEPSLEEP_SET_TIMER(gDEEPSLEEPHandle, time, result);
-    UT_ASSERT_FALSE(result);
-    time = -1;
-    DEEPSLEEP_SET_TIMER(gDEEPSLEEPHandle, time, result);
-    UT_ASSERT_FALSE(result);
     return;
 }
 
-UT_ADD_TEST(VTS_L1_DEEPSLEEP, l1_enterdeepsleep_pos)
-{
-    std::vector<::com::rdk::hal::deepsleep::WakeUpTrigger> triggersToWakeUpon;
-    std::vector<::com::rdk::hal::deepsleep::WakeUpTrigger> wokeUpByTriggers;
-    std::optional<com::rdk::hal::deepsleep::KeyCode> kCode;
-    bool result = false;
-    DEEPSLEEP_ENTERDEEPSLEEP(gDEEPSLEEPHandle, triggersToWakeUpon, wokeUpByTriggers, kCode, result);
-    UT_ASSERT_TRUE(result);
-    UT_ASSERT_TRUE(kCode.has_value()); //preconfigured list will have RCU_IR
-    triggersToWakeUpon.push_back(com::rdk::hal::deepsleep::WakeUpTrigger::VOICE);
-    DEEPSLEEP_ENTERDEEPSLEEP(gDEEPSLEEPHandle, triggersToWakeUpon, wokeUpByTriggers, kCode, result);
-    UT_ASSERT_TRUE(result);
-    UT_ASSERT_FALSE(kCode.has_value());
-    UT_ASSERT_TRUE(std::find(triggersToWakeUpon.begin(), triggersToWakeUpon.end(), WakeUpTrigger::VOICE) != triggersToWakeUpon.end());
-    return;
-}
-
-UT_ADD_TEST(VTS_L1_DEEPSLEEP, l1_enterdeepsleep_neg)
+UT_ADD_TEST(VTS_L1_DEEPSLEEP, enterdeepsleep_neg)
 {
     com::rdk::hal::deepsleep::Capabilities caps;
     DEEPSLEEP_GET_CAPABILITY(gDEEPSLEEPHandle, caps);
     std::vector<::com::rdk::hal::deepsleep::WakeUpTrigger> triggersToWakeUpon;
     std::vector<::com::rdk::hal::deepsleep::WakeUpTrigger> wokeUpByTriggers;
     std::optional<com::rdk::hal::deepsleep::KeyCode> kCode;
-    bool result = false;
+    bool result;
     DEEPSLEEP_ENTERDEEPSLEEP(gDEEPSLEEPHandle, triggersToWakeUpon, wokeUpByTriggers, kCode, result);
     if (caps.preconfiguredTriggers.empty()) {
         // when both input list and preconfigured list is empty
@@ -191,6 +203,10 @@ UT_ADD_TEST(VTS_L1_DEEPSLEEP, l1_enterdeepsleep_neg)
     }
     UT_ASSERT_FALSE(kCode.has_value());
     triggersToWakeUpon.push_back(com::rdk::hal::deepsleep::WakeUpTrigger::ERROR_UNKNOWN);
+    DEEPSLEEP_ENTERDEEPSLEEP(gDEEPSLEEPHandle, triggersToWakeUpon, wokeUpByTriggers, kCode, result);
+    UT_ASSERT_FALSE(result);
+    triggersToWakeUpon.clear();
+    triggersToWakeUpon.push_back(static_cast<::com::rdk::hal::deepsleep::WakeUpTrigger>(999));
     DEEPSLEEP_ENTERDEEPSLEEP(gDEEPSLEEPHandle, triggersToWakeUpon, wokeUpByTriggers, kCode, result);
     UT_ASSERT_FALSE(result);
     return;

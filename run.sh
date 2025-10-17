@@ -20,7 +20,7 @@
 #* ******************************************************************************
 
 RUN_DIR=$(realpath "$(dirname "$0")")
-VCOMPONENT_SERVICE_NAME=VComponentDeepSleepService
+VCOMPONENT_SERVICE_NAME=Vendor-DeepSleep
 VCOMPONENT_CONFIG_PATH=${RUN_DIR}/vcomponent_configurations/deepsleep_vcomponent_configuration.yaml
 # Function to check if a process is running
 check_process()
@@ -54,8 +54,9 @@ prompt_string()
 start_vcomponent_service()
 {
     echo "Starting ${VCOMPONENT_SERVICE_NAME} with config: ${VCOMPONENT_CONFIG_PATH}"
+    echo "Vcomponent Service Config Path (Default: ${VCOMPONENT_CONFIG_PATH})"
     local user_config
-    user_config=$(prompt_string "Vcomponent Service Config Path (Default: ${VCOMPONENT_CONFIG_PATH})")
+#    user_config=$(prompt_string "Vcomponent Service Config Path (Default: ${VCOMPONENT_CONFIG_PATH})")
     if [ -z "$user_config" ]; then
         user_config="$VCOMPONENT_CONFIG_PATH"
     fi
@@ -67,15 +68,6 @@ start_vcomponent_service()
 
 if check_process $VCOMPONENT_SERVICE_NAME; then
     echo "${VCOMPONENT_SERVICE_NAME} is already running"
-    mocservice_pid=$(pgrep -f $VCOMPONENT_SERVICE_NAME)
-    if prompt_yes_no "Do you want to re-start ${VCOMPONENT_SERVICE_NAME}?"; then
-        echo "Killing existing ${VCOMPONENT_SERVICE_NAME} (PID: $mocservice_pid)"
-        kill $mocservice_pid
-        sleep 2
-        start_vcomponent_service
-    else
-        echo "Continuing with existing ${VCOMPONENT_SERVICE_NAME} (PID: $mocservice_pid)"
-    fi
 else
     start_vcomponent_service
 fi

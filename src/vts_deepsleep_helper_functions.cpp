@@ -88,20 +88,6 @@ const ut_control_keyStringMapping_t statusDeepSleepException_mapTable[] =
     {NULL, -1}
 };
 
-WakeUpTrigger stringToWakeUpTrigger(const std::string& str) {
-    if (str == "RCU_IR") return WakeUpTrigger::RCU_IR;
-    if (str == "RCU_BT") return WakeUpTrigger::RCU_BT;
-    if (str == "RCU_RF4CE") return WakeUpTrigger::RCU_RF4CE;
-    if (str == "LAN") return WakeUpTrigger::LAN;
-    if (str == "WLAN") return WakeUpTrigger::WLAN;
-    if (str == "TIMER") return WakeUpTrigger::TIMER;
-    if (str == "FRONT_PANEL") return WakeUpTrigger::FRONT_PANEL;
-    if (str == "CEC") return WakeUpTrigger::CEC;
-    if (str == "PRESENCE") return WakeUpTrigger::PRESENCE;
-    if (str == "VOICE") return WakeUpTrigger::VOICE;
-    return WakeUpTrigger::ERROR_UNKNOWN;
-}
-
 std::string vecIntToString(std::vector<int32_t>& addrs)
 {
     std::string s;
