@@ -64,6 +64,9 @@
 #include "com/rdk/hal/deepsleep/IDeepSleep.h"
 #include "ut_log.h"
 
+#define MAX_LENGTH 256
+#define SUPPORTEDLIST_NODE "IDeepSleep.supportedTriggers"
+#define PRECONFIGUREDLIST_NODE "IDeepSleep.preconfiguredTriggers"
 extern sp<IDeepSleep> gDEEPSLEEPHandle;
 
 /* Test class registration with UT_Core */
@@ -93,8 +96,8 @@ UT_ADD_TEST(VTS_L1_DEEPSLEEP, getCaps_pos)
     // Validate that the output parameter has been populated.
     UT_ASSERT_TRUE(!caps.supportedTriggers.empty());
     UT_ASSERT_TRUE(!caps.preconfiguredTriggers.empty());
-    size_t supportedcount = UT_KVP_PROFILE_GET_LIST_COUNT("IDeepSleep.supportedTriggers");
-    size_t preconfiguredcount = UT_KVP_PROFILE_GET_LIST_COUNT("IDeepSleep.preconfiguredTriggers");
+    size_t supportedcount = UT_KVP_PROFILE_GET_LIST_COUNT(SUPPORTEDLIST_NODE);
+    size_t preconfiguredcount = UT_KVP_PROFILE_GET_LIST_COUNT(PRECONFIGUREDLIST_NODE);
     // Verify that every preconfigured trigger is a member of supportedTriggers.
     for (auto mandTrigger : caps.preconfiguredTriggers) {
         UT_ASSERT_NOT_EQUAL(std::find(caps.supportedTriggers.begin(), caps.supportedTriggers.end(), mandTrigger),
@@ -104,8 +107,8 @@ UT_ADD_TEST(VTS_L1_DEEPSLEEP, getCaps_pos)
     UT_ASSERT_EQUAL(caps.supportedTriggers.size(), supportedcount);
     for (size_t i = 0; i < supportedcount; i++) {
         bool result = false;
-        std::string key_string = "IDeepSleep.supportedTriggers." + std::to_string(i);
-        char trigger[256] = {0};
+        std::string key_string = std::string(SUPPORTEDLIST_NODE) + "." + std::to_string(i);
+        char trigger[MAX_LENGTH] = {0};
         UT_KVP_PROFILE_GET_STRING(key_string.c_str(), trigger);
         if (trigger[0] != '\0') {
             for (auto x : caps.supportedTriggers) {
@@ -125,8 +128,8 @@ UT_ADD_TEST(VTS_L1_DEEPSLEEP, getCaps_pos)
     UT_ASSERT_EQUAL(caps.preconfiguredTriggers.size(), preconfiguredcount);
     for (size_t i = 0; i < preconfiguredcount; i++) {
         bool result = false;
-        std::string key_string = "IDeepSleep.preconfiguredTriggers." + std::to_string(i);
-        char trigger[256] = {0};
+        std::string key_string = std::string(PRECONFIGUREDLIST_NODE) + "." + std::to_string(i);
+        char trigger[MAX_LENGTH] = {0};
         UT_KVP_PROFILE_GET_STRING(key_string.c_str(), trigger);
         if (trigger[0] != '\0') {
             for (auto x : caps.preconfiguredTriggers) {
