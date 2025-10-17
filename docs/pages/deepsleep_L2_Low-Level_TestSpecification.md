@@ -35,33 +35,6 @@ The following functions are planned as part of L2 testing.
 
 | Title | Details |
 | -- | -- |
-| Function Name | `test_getCapabilities` |
-| Description | Read supported capabilities using getCapabilities function. |
-| Test Group | 02 |
-| Test Case ID | 001 |
-| Priority | High |
-
-**Pre-Conditions :**
-None
-
-**Dependencies :**
-None
-
-**User Interaction :**
-If user chose to run the test in interactive mode, then the test case has to be selected via console.
-
-**Test Procedure :**
-
-| Variation / Steps     | Description                          | Test Data                                  | Expected Result                               | Notes                          |
-|-----------------------|--------------------------------------|--------------------------------------------|-----------------------------------------------|--------------------------------|
-| 1.| Obtain IDeepSleep handle            | None                           | Valid handle acquired                | Ensure HAL is initialized      |
-| 2.| Get the capabilities using getCapabilities() | caps = valid buffer           | Function returns successfully     | -     |
-| 3.| Compare the capabilities with the value in the configuration file      | caps.supportedTriggers = DeepSleep/supportedTriggers caps.preconfiguredTriggers = DeepSleep/preconfiguredTriggers            | Values should match          | -       |
-
-### Test 2
-
-| Title | Details |
-| -- | -- |
 | Function Name | `test_setgettimer` |
 | Description | Set and get the wakeup time for duration|
 | Test Group | 02 |
@@ -87,7 +60,7 @@ If user chose to run the test in interactive mode, then the test case has to be 
 | 4 | Get the deep sleep wakeup duration using getWakeUpTimer() | None | Timer value set has to be returned | - |
 | 5 | Verify the timer values | seconds = getWakeUpTimer() | Timer values should match  | Verify proper set/get of wakeup duration |
 
-### Test 3
+### Test 2
 
 | Title | Details |
 | -- | -- |
