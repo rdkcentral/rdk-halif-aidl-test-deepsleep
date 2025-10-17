@@ -38,7 +38,7 @@ The following functions are planned as part of L2 testing.
 | Function Name | `test_setgettimer` |
 | Description | Set and get the wakeup time for duration|
 | Test Group | 02 |
-| Test Case ID | 002 |
+| Test Case ID | 001 |
 | Priority | High |
 
 **Pre-Conditions :**
@@ -67,7 +67,7 @@ If user chose to run the test in interactive mode, then the test case has to be 
 | Function Name | `test_enterdeepsleep` |
 | Description | Set the deep sleep with a duration of ten seconds and verify the wake-up trigger|
 | Test Group | 02 |
-| Test Case ID | 003 |
+| Test Case ID | 002 |
 | Priority | High |
 
 **Pre-Conditions :**
