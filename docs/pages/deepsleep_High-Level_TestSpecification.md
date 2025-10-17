@@ -41,7 +41,6 @@ The Deepsleep HAL also provides APIs to set and get wake-up timers.
 
 |Test|Description|HAL APIs|
 |----|-----------|--------|
-|Get Deepsleep Capabilities|<ul><li>Read supported/preconfigured triggers of deepsleep using `IDeepSleep` class</li><li>Validate the list of `supportedTriggers[]` and `preconfiguredTriggers[]` to ensure all values match `hfp-deepsleep.yaml`.| `getCapabilities()`|
 |Enter Deep Sleep with TIMER Triggers|<ul><li>Pass TIMER triggers to `enterDeepSleep()` and validate that device returns the TIMER in `wokeUpByTriggers` param</li><li>Validate if the system clock has been adjusted to closely represent the actual elapsed time spent in deep sleep</li>|`enterDeepSleep()`|
 |Set and Get Deepsleep wakeup timer|Set the timer with various values and validate the same using get calls|`setWakeUpTimer()` `getWakeUpTimer()`|
 
