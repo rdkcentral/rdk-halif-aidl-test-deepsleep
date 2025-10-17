@@ -31,6 +31,8 @@ declare -r TOP=`dirname $(realpath $0)`
 declare -r HALIF_VERSION=current
 RDK_HALIF_AIDL_VERSION="${RDK_HALIF_AIDL_VERSION="main"}"
 RDK_HALIF_TEST_BASE_URL="https://github.com/rdkcentral/rdk-halif-binder-test-"
+VCOMPONENT_DEEPSLEEP_VERSION="${VCOMPONENT_DEEPSLEEP_VERSION="main"}"
+OUT_TAR_FILE=vts-deepsleep.tar.gz
 
 declare -A HALIF_COMPONENTS=(
   [deepsleep]="current"
@@ -192,6 +194,7 @@ build_vcomponent_services()
 
     pushd ${VCOMPONENT_DIR}
 
+    #git checkout ${VCOMPONENT_DEVICEINFO_VERSION}
     git checkout feature/issue1_deepsleep_vcomponent #Remove this line, once vcomponent PR is merged
 
     make -j"$(nproc)" -C "${TOP}/vcomponent" BUILD_DIR="${TOP_BUILD_DIR}" UT_CORE_DIR="${UT_CORE_DIR}"
@@ -233,6 +236,11 @@ install_test()
 
     cp -r ${PROFILES_DIR} ${INSTALL_PATH}
     cp -r "${TOP}/vcomponent/vcomponent_configurations" ${INSTALL_PATH}
+    cp -r "${TOP}/vcomponent/deepsleep_populate_controlPlane.sh" ${INSTALL_PATH}
+
+    cd ${INSTALL_PATH}
+    tar -czf ${OUT_TAR_FILE} *
+    cd -
 }
 
 ###############################################################################
@@ -245,6 +253,10 @@ clean_test()
     rm -rf test/*.o
     rm -rf ${TOP}/vcomponent/src/*.o
     rm -rf ${TOP}/src/*.o
+    make -C ${AIDL_LIB_DIR} clean
+    make -C ${VCOMPONENT_DIR} clean
+    make clean
+    rm -rf ${TOP_BUILD_DIR}/bin/${OUT_TAR_FILE}
 }
 
 ###############################################################################

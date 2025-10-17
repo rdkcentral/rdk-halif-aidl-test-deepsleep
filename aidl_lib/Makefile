@@ -18,7 +18,7 @@
 #*
 #* ******************************************************************************
 
-.PHONY: all
+.PHONY: all clean
 
 AIDL_LIB_NAME := aidl_client
 
@@ -54,3 +54,6 @@ $(AIDL_LIB): $(AIDL_SRC:%.cpp=%.o)
 
 %.o: %.cpp
 	g++ $(AIDL_LIB_CFLAGS) $(AIDL_LIB_INC_FLAGS) -fPIC -c $< -o $@
+
+clean:
+	rm -f $(AIDL_LIB) $(AIDL_SRC:%.cpp=%.o)
