@@ -112,6 +112,13 @@ std::string vecByteToHexString(const std::vector<uint8_t>& data)
     return oss.str();
 }
 
+bool isTriggerSupported (std::vector<WakeUpTrigger>& triggerlist, WakeUpTrigger trigger) {
+    if (std::find(triggerlist.begin(), triggerlist.end(), trigger) == triggerlist.end()) {
+        return false;
+    } else {
+        return true;
+    }
+}
 /** @} */ // End of DEEPSLEEP_HALTEST_HELPER
 /** @} */ // End of DEEPSLEEP_HALTEST
 /** @} */ // End of DEEPSLEEP

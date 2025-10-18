@@ -102,6 +102,7 @@ extern WakeUpTrigger stringToWakeUpTrigger(const std::string& str);
 
 std::string vecIntToString(std::vector<int32_t>& addrs);
 std::string vecByteToHexString(const std::vector<uint8_t>& data);
+bool isTriggerSupported (std::vector<WakeUpTrigger>& triggerlist, WakeUpTrigger trigger);
 
 #endif //__VTS_DEEPSLEEP_HELPER_H__
 

@@ -30,19 +30,6 @@ check_process()
     return $?
 }
 
-prompt_yes_no()
-{
-    local prompt=$1
-    while true; do
-        read -p "$prompt (y/n): " response
-        case $response in
-            [Yy]* ) return 0;;
-            [Nn]* ) return 1;;
-            * ) echo "Please answer y or n";;
-        esac
-    done
-}
-
 prompt_string()
 {
     local prompt=$1
