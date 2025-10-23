@@ -21,7 +21,6 @@
 - `CB`     - Call-back function (suffix)
 - `YAML`   - YAML Ain’t Markup Language
 - `RCU`    - Remote Control Unit 
-- `CEC`    - Consumer Electronics Control
 - `RTC`    - Real-Time Clock
 
 ## Introduction
