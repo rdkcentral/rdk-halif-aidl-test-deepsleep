@@ -46,7 +46,7 @@ Example:
 export UT_CORE_VERSION=4.7.0
 export RDK_HALIF_AIDL_VERSION=0.7.1
 export AIDL_BIN=/path/linux_binder_idl/out/aidl
-export LINUX_BINDER_OUT_DIR=/path//linux_binder_idl/local/
+export LINUX_BINDER_OUT_DIR=/path/linux_binder_idl/local/
 ```
 
 By default, UT logs are disabled. To enable them, Set below environment variable

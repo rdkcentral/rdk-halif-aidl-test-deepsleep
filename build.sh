@@ -195,7 +195,6 @@ build_vcomponent_services()
     pushd ${VCOMPONENT_DIR}
 
     git checkout ${VCOMPONENT_DEEPSLEEP_VERSION}
-    #git checkout feature/issue1_deepsleep_vcomponent #Remove this line, once vcomponent PR is merged
 
     make -j"$(nproc)" -C "${TOP}/vcomponent" BUILD_DIR="${TOP_BUILD_DIR}" UT_CORE_DIR="${UT_CORE_DIR}"
     if [ $? -ne 0 ]; then

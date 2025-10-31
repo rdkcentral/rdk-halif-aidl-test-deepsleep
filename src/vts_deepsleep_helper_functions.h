@@ -84,8 +84,6 @@
 
 #include "com/rdk/hal/deepsleep/IDeepSleep.h"
 
-#include "vts_deepsleep_helper_functions.h"
-
 using android::sp;
 using android::String16;
 using android::defaultServiceManager;
