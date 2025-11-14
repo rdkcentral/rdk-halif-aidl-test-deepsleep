@@ -98,9 +98,12 @@ extern const ut_control_keyStringMapping_t bool_mapTable_deepsleep[];
 extern const ut_control_keyStringMapping_t statusDeepSleepException_mapTable[];
 extern WakeUpTrigger stringToWakeUpTrigger(const std::string& str);
 
+#define MAX_LENGTH 256
+
 std::string vecIntToString(std::vector<int32_t>& addrs);
 std::string vecByteToHexString(const std::vector<uint8_t>& data);
 bool isTriggerSupported (std::vector<WakeUpTrigger>& triggerlist, WakeUpTrigger trigger);
+WakeUpTrigger fromString(const std::string& str);
 
 #endif //__VTS_DEEPSLEEP_HELPER_H__
 
