@@ -65,28 +65,28 @@ rackConfig:
                             port: 7722
                             username: "root"
                             ip: "127.0.0.1" #IP address
-                            password: 'tel@123'
+                            password: ''
                             prompt: "~#" # Prompt string on console
                         - ssh_hal_test:
                             type: "ssh"
                             port: 7722
                             username: "root"
                             ip: "127.0.0.1" #IP address
-                            password: 'tel@123'
+                            password: ''
                             prompt: "~#" # Prompt string on console
                         - ssh_hal_test_1:
                             type: "ssh"
                             port: 7722
                             username: "root"
                             ip: "127.0.0.1" #IP address
-                            password: 'tel@123'
+                            password: ''
                             prompt: "~#" # Prompt string on console
                     powerSwitch:
                       type: "tapo" #give powerswitch type eg:hs100,tapo etc
                       ip: "192.168.50.120" # give powerswitch ip
                       port: "" #if required eg: 9999 for hs100
-                      username: "karthikeyanr338@gmail.com"
-                      password: "Dec@30122019"
+                      username: ""
+                      password: ""
                     outbound:
                         download_url: "tftp://tftp-server.com/rack1/slot1/"    # download location for the CPE device
                         upload_url: "sftp://server-address/home/workspace/tftp/rack1/slot1/" # upload location
