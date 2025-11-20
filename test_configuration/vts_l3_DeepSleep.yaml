@@ -16,7 +16,7 @@
 # * See the License for the specific language governing permissions and
 # * limitations under the License.
 # *
-#** ******************************************************************************
+# * ******************************************************************************
 DeepSleep:
   L3:
     EnterDeepSleep:
@@ -26,7 +26,8 @@ DeepSleep:
           - TIMER
           - FRONT_PANEL
       Expected_Results:
+        expectedwaittime: 2
         output_wokeUpByTriggers:
           - TIMER
           - FRONT_PANEL
-        output_keycode : false # true when output trigger has RCU
+        output_keycode : 6 # optional when output trigger has RCU
