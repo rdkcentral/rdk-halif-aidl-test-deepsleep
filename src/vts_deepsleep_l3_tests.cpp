@@ -91,7 +91,7 @@ public:
 };
 
 /**
- * @brief
+ * @brief Test to verify the EnterDeepSleep functionality with configured wake-up triggers.
  *
  *
  * **Test Group ID:** Basic: 03@n

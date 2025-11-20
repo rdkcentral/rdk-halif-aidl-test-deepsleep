@@ -72,6 +72,10 @@
 
 using namespace std;
 
+/**
+ * @brief Structure to hold expected DeepSleep test results
+ * Contains the expected wake-up triggers and keycode status
+ */
 typedef struct vts_deepsleep_result
 {
     int32_t expectedwaittime;
@@ -79,6 +83,10 @@ typedef struct vts_deepsleep_result
     std::optional<int32_t> output_keycode;
 }vts_deepsleep_result_t;
 
+/**
+ * @brief Configuration structure for EnterDeepSleep test
+ * Contains test input parameters and expected output results
+ */
 typedef struct enterdeepsleepTestConfig
 {
     int32_t timer;
@@ -88,6 +96,17 @@ typedef struct enterdeepsleepTestConfig
 
 #define VTS_DEEPSLEEP_TEST_CONFIG_PATH "./test_configuration/vts_l3_DeepSleep.yaml"
 
+/**
+ * @brief Parses the EnterDeepSleep test configuration from YAML file
+ * 
+ * @param[in] configurationFile Path to the YAML configuration file
+ * @param[in] module Module name
+ * @param[in] testGroup Test group name
+ * @param[in] testName Test name
+ * @param[out] testConfiguration Parsed test configuration
+ * 
+ * @return UT_STATUS_OK on success, appropriate error code otherwise
+ */
 UT_status_t vts_deepsleep_parse_enterdeepsleep_config(char *configurationFile, const char *module, const char *testGroup,
                                                  const char *testName, enterdeepsleepTestConfig_t& testConfiguration);
 #endif //__VTS_DEEPSLEEP_PARSE_TESTCONFIG_H__

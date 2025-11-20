@@ -73,7 +73,7 @@ static void* vcomponentkvp_create_instance(char *fileName)
 
     if(!instance)
     {
-        UT_LOG_ERROR("[VCOMPONENT_DEEPSLEEP]Failed to create ut kvp instance");
+        UT_LOG_ERROR("[VCOMPONENT_DEEPSLEEP]Failed to create ut kvp instance\n");
         return nullptr;
     }
 
@@ -81,7 +81,7 @@ static void* vcomponentkvp_create_instance(char *fileName)
 
     if(result != UT_KVP_STATUS_SUCCESS)
     {
-        UT_LOG_ERROR("[VCOMPONENT_DEEPSLEEP]Failed to open test configuration file");
+        UT_LOG_ERROR("[VCOMPONENT_DEEPSLEEP]Failed to open test configuration file\n");
         ut_kvp_destroyInstance(instance);
         return nullptr;
     }
@@ -97,8 +97,6 @@ static void vcomponentkvp_destroy_instance(void *instance)
 UT_status_t vts_deepsleep_parse_enterdeepsleep_config(char *configurationFile, const char *module, const char *testGroup,
                                                  const char *testName, enterdeepsleepTestConfig_t& testConfiguration)
 {
-    char resultKVP[UT_KVP_MAX_ELEMENT_SIZE] = {0};
-
     void *testconfig = vcomponentkvp_create_instance(configurationFile);
     ut_kvp_instance_t* kvpTestInstance = (ut_kvp_instance_t*)testconfig;
 
