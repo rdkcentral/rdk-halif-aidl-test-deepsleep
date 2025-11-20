@@ -51,33 +51,11 @@ class  VTS_DEEPSLEEP_L3_WakeFromMultipleTrigger(deepsleepHelperClass):
 
         super().__init__(self.testName, qcId, log)
 
-    def updateTestconfigurationFile(self, timer: int = 0):
-        """
-        Updates the DEEPSLEEP L3 ReceiveMessage YAML configuration file.
-        """
-        data = self.deepsleepReadYaml(self.l3TestConfigFile)
-
-        data["DeepSleep"]["L3"]["EnterDeepSleep"]["Parameters"]["timer"] = timer
-        data["DeepSleep"]["L3"]["EnterDeepSleep"]["Parameters"]["input_triggersToWakeUpon"] = [
-            "RCU_IR",
-            "TIMER",
-            "FRONT_PANEL"
-        ]
-        
-        data["DeepSleep"]["L3"]["EnterDeepSleep"]["Expected_Results"]["output_wokeUpByTriggers"] = [
-            "FRONT_PANEL",
-            "TIMER"
-        ]
-
-        data["DeepSleep"]["L3"]["EnterDeepSleep"]["Expected_Results"]["output_keycode"] = False
-        # write to YAML
-        self.deepsleepWriteYaml(self.l3TestConfigFile, data)
-
     def wakeuptriggerThread(self, trigger: str, threadwaittime: int=5):
         """
         Thread function to send messages to DUT
         """
-        #self.power_level = self.getPowerLevel()
+        #self.power_level = self.getPowerLevel() #TODO for actual device to measure power
         time.sleep(threadwaittime)  # Wait for DUT to be ready to trigger wakeup
         self.deepsleepDevice.triggerWakeup(trigger)
         time.sleep(1)  # Small delay between messages
@@ -93,9 +71,12 @@ class  VTS_DEEPSLEEP_L3_WakeFromMultipleTrigger(deepsleepHelperClass):
         results = False
         self.testcase = "EnterDeepSleep"
 
-        self.updateTestconfigurationFile(3)
+        inputlist = ["RCU_IR", "TIMER", "FRONT_PANEL"]
+        outputlist = ["FRONT_PANEL", "TIMER"]
+        threadwaittime = 3
+        self.updateTestconfigurationFile(inputlist, outputlist, 3, threadwaittime)
         self.utilities.sftpCopy(self.hal_session, self.l3TestConfigFile, self.l3TestConfigFolder)
-        self.wakeuptriggerThreadObj1 = threading.Thread(target=self.wakeuptriggerThread, args=("FRONT_PANEL", 3))
+        self.wakeuptriggerThreadObj1 = threading.Thread(target=self.wakeuptriggerThread, args=("FRONT_PANEL", threadwaittime))
         self.utMenu.start()
         self.wakeuptriggerThreadObj1.start()
         self.log.stepStart(f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: {self.testcase}')

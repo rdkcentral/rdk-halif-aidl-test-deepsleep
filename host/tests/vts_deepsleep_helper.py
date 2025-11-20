@@ -75,7 +75,7 @@ class deepsleepHelperClass(utHelperClass):
         self.testMenuConfiguration.test.execute = self.testMenuConfiguration.test.execute + f" -p {profileOnTarget}"
         self.l3TestConfigFolder = os.path.join(self.targetWorkspace, "test_configuration")
         self.l3TestConfigFolder = self.l3TestConfigFolder.replace("\\", "/")
-        self.power_level = 0.0
+        self.power_level = 1.0
 
         # Establish HAL session
         self.hal_session = self.dut.getConsoleSession("ssh_hal_test")
@@ -108,6 +108,26 @@ class deepsleepHelperClass(utHelperClass):
         controlclass = self.dut.powerControl
         power = controlclass.getPowerLevel()
         return power
+
+    def updateTestconfigurationFile(self, intrigger: list, outtrigger: list, timer: int=0, threadwaittime: int=5, keycode: int=0):
+        """
+        Updates the DEEPSLEEP L3 ReceiveMessage YAML configuration file.
+        """
+        data = self.deepsleepReadYaml(self.l3TestConfigFile)
+
+        node = data["DeepSleep"]["L3"]["EnterDeepSleep"]
+        node["Parameters"]["timer"] = timer
+        node["Parameters"]["input_triggersToWakeUpon"] = intrigger
+        
+        node["Expected_Results"]["expectedwaittime"] = threadwaittime
+        node["Expected_Results"]["output_wokeUpByTriggers"] = outtrigger
+
+        if any(x in outtrigger for x in ["RCU_IR", "RCU_BT", "RCU_RF4CE"]):
+            node["Expected_Results"]["output_keycode"] = keycode
+        else:
+            node["Expected_Results"].pop("output_keycode", None)
+        # write to YAML
+        self.deepsleepWriteYaml(self.l3TestConfigFile, data)
 
     def deepsleepReadYaml(self, yaml_path: str) -> dict:
         """
