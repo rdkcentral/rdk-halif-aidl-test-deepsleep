@@ -121,20 +121,37 @@ UT_ADD_TEST(VTS_L3_DEEPSLEEP, EnterDeepSleep)
     UT_ASSERT_EQUAL_FATAL(status, UT_STATUS_OK);
 
     bool result;
-    if ((isTriggerSupported(testConfiguration.input_triggersToWakeUpon, WakeUpTrigger::TIMER))) {
-            UT_LOG_INFO("TIMER trigger is in inputtrigger list\n");
+    com::rdk::hal::deepsleep::Capabilities caps;
+    DEEPSLEEP_GET_CAPABILITY(gDEEPSLEEPHandle, caps);
+    if ((isTriggerSupported(testConfiguration.input_triggersToWakeUpon, WakeUpTrigger::TIMER)) ||
+        (isTriggerSupported(caps.preconfiguredTriggers, WakeUpTrigger::TIMER))) {
+            UT_LOG_INFO("TIMER trigger is in inputtrigger/preconfigure list\n");
             DEEPSLEEP_SET_TIMER(gDEEPSLEEPHandle, testConfiguration.timer, result);
             UT_ASSERT_TRUE(result);
+            int32_t gettime;
+            DEEPSLEEP_GET_TIMER(gDEEPSLEEPHandle, gettime);
+            UT_ASSERT_EQUAL(testConfiguration.timer, gettime);
     }
 
     std::vector<::com::rdk::hal::deepsleep::WakeUpTrigger> wokeUpByTriggers;
     std::optional<com::rdk::hal::deepsleep::KeyCode> kCode;
+    auto timeBeforeSleep = std::chrono::system_clock::now();
     DEEPSLEEP_ENTERDEEPSLEEP(gDEEPSLEEPHandle, testConfiguration.input_triggersToWakeUpon, wokeUpByTriggers, kCode, result);
+    auto timeAfterSleep = std::chrono::system_clock::now();
     UT_ASSERT_TRUE(result);
     for (size_t i = 0; i < wokeUpByTriggers.size(); i++) {
         UT_ASSERT_TRUE(isTriggerSupported(testConfiguration.output.output_wokeUpByTriggers, wokeUpByTriggers[i]));
+        if (wokeUpByTriggers[i] == WakeUpTrigger::RCU_IR ||  wokeUpByTriggers[i] == WakeUpTrigger::RCU_BT || wokeUpByTriggers[i] == WakeUpTrigger::RCU_RF4CE) {
+            UT_ASSERT_TRUE(kCode.has_value());
+            UT_ASSERT_EQUAL(testConfiguration.output.output_keycode, kCode->keyCode);
+        } else {
+            UT_ASSERT_FALSE(kCode.has_value());
+        }
     }
-    UT_ASSERT_EQUAL(testConfiguration.output.output_keycode, kCode.has_value());
+    auto sleepDuration = std::chrono::duration_cast<std::chrono::seconds>(timeAfterSleep - timeBeforeSleep).count();
+    UT_LOG_INFO("Time taken by deepsleep %lld seconds (expectedwaittime ~%d)", sleepDuration, testConfiguration.output.expectedwaittime);
+    uint32_t buffertime = UT_KVP_PROFILE_GET_UINT32("IDeepSleep.bufferduration");
+    UT_ASSERT_TRUE(std::abs(sleepDuration - testConfiguration.output.expectedwaittime) <= buffertime);
     return;
 }
 

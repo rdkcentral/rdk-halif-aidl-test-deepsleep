@@ -112,8 +112,9 @@ UT_status_t vts_deepsleep_parse_enterdeepsleep_config(char *configurationFile, c
         for (uint32_t index = 0; index < inputtriggercount; index++)
         {
             char trigger[MAX_LENGTH] = {0};
-            ut_kvp_getStringField(kvpTestInstance, (inputtriggerstr + "." + std::to_string(index)).c_str(), trigger, MAX_LENGTH);
-            testConfiguration.input_triggersToWakeUpon.push_back(fromString(trigger));
+            ut_kvp_status_t ret = ut_kvp_getStringField(kvpTestInstance, (inputtriggerstr + "." + std::to_string(index)).c_str(), trigger, MAX_LENGTH);
+            if (ret == UT_KVP_STATUS_SUCCESS)
+                testConfiguration.input_triggersToWakeUpon.push_back(fromString(trigger));
         }
     }
     else
@@ -121,6 +122,7 @@ UT_status_t vts_deepsleep_parse_enterdeepsleep_config(char *configurationFile, c
         UT_LOG_ERROR("Input trigger list is empty\n");
     }
 
+    testConfiguration.output.expectedwaittime = ut_kvp_getUInt32Field(kvpTestInstance, (testNode + ".Expected_Results" + ".expectedwaittime").c_str());
     const std::string outputtriggerstr = testNode + ".Expected_Results" + ".output_wokeUpByTriggers";
     uint32_t outputtriggercount = ut_kvp_getListCount(kvpTestInstance, outputtriggerstr.c_str());
     if (outputtriggercount > 0)
@@ -128,15 +130,18 @@ UT_status_t vts_deepsleep_parse_enterdeepsleep_config(char *configurationFile, c
         for (uint32_t index = 0; index < outputtriggercount; index++)
         {
             char trigger[MAX_LENGTH] = {0};
-            ut_kvp_getStringField(kvpTestInstance, (outputtriggerstr + "." + std::to_string(index)).c_str(), trigger, MAX_LENGTH);
-            testConfiguration.output.output_wokeUpByTriggers.push_back(fromString(trigger));
+            ut_kvp_status_t ret = ut_kvp_getStringField(kvpTestInstance, (outputtriggerstr + "." + std::to_string(index)).c_str(), trigger, MAX_LENGTH);
+            if (ret == UT_KVP_STATUS_SUCCESS)
+                testConfiguration.output.output_wokeUpByTriggers.push_back(fromString(trigger));
         }
     }
     else
     {
         UT_LOG_ERROR("Output trigger list is empty\n");
     }
-    testConfiguration.output.output_keycode = ut_kvp_getBoolField(kvpTestInstance, (testNode + ".Expected_Results" + ".output_keycode").c_str());
+    if (ut_kvp_fieldPresent(kvpTestInstance, (testNode + ".Expected_Results" + ".output_keycode").c_str())) {
+        testConfiguration.output.output_keycode = ut_kvp_getUInt32Field(kvpTestInstance, (testNode + ".Expected_Results" + ".output_keycode").c_str());
+    }
 
     vcomponentkvp_destroy_instance(kvpTestInstance);
     return UT_STATUS_OK;

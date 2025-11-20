@@ -74,8 +74,9 @@ using namespace std;
 
 typedef struct vts_deepsleep_result
 {
+    int32_t expectedwaittime;
     std::vector<::com::rdk::hal::deepsleep::WakeUpTrigger> output_wokeUpByTriggers;
-    bool output_keycode;
+    std::optional<int32_t> output_keycode;
 }vts_deepsleep_result_t;
 
 typedef struct enterdeepsleepTestConfig
