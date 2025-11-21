@@ -27,7 +27,7 @@ deviceConfig:
         platform:   "vDevice"
         model:      "VTV"
         soc_vendor: "intel"
-        target_directory: "/home/root/thanu/"
+        target_directory: "/home/root/"
         deepsleep_process_name: "Vendor-DeepSleep"
         device_type: ["TV"] # Possible values: ["TV", "RecordingDevice", "Tuner", "PlaybackDevice", "AudioSystem", "VideoProcessor", "PureCecSwitch", "Reserved"]
         prompt: "~#" # Prompt string on console
@@ -35,3 +35,8 @@ deviceConfig:
         test:
             profile: "../../profiles/hfp-deepsleep-vcomponent.yaml" #HFP profile used to meet platform requirements
             controller_port: 8080 #Port where the ut-controller is listening
+        remote:
+            deepsleep:
+                RCU_IR: 6
+                RCU_BT: 7
+                RCU_RF4CE: 8

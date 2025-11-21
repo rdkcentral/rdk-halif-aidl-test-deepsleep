@@ -21,7 +21,7 @@
 # *
 #* ******************************************************************************
 
-class DeepSleepNetwork:
+class DeepSleepController:
     """
     Wrapper class to instantiate the correct DEEPSLEEP implementation.
     """
@@ -39,12 +39,12 @@ class DeepSleepNetwork:
             port (int, optional): Port number for DEEPSLEEP communication. Defaults to 8080.
         """
         if mode == "vDevice":
-            from .vDeepSleep import vDeepSleep
-            self.deepsleep = vDeepSleep(device_type, session, prompt, port)
+            from .virtualDeepSleep import virtualDeepSleep
+            self.deepsleep = virtualDeepSleep(device_type, session, prompt, port)
         else:
             #TODO: Add actual DEEPSLEEP implementation here
-            from .aDeepSleep import aDeepSleep
-            self.deepsleep = aDeepSleep(device_type, session, prompt, port)
+            from .actualDeepSleep import actualDeepSleep
+            self.deepsleep = actualDeepSleep(device_type, session, prompt, port)
 
     def __getattr__(self, name):
         """Delegate method/attribute access to underlying instance."""

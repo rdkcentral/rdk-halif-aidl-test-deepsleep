@@ -26,6 +26,7 @@ import sys
 import tarfile
 import yaml
 import time
+import threading
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(dir_path, "../"))
@@ -35,12 +36,13 @@ from raft.framework.plugins.ut_raft import utHelperClass
 from raft.framework.core.logModule import logModule
 from raft.framework.plugins.ut_raft.utSuiteNavigator import UTSuiteNavigatorClass
 from raft.framework.plugins.ut_raft.utBaseUtils import utBaseUtils
-from raft.framework.core.powerControl import powerControlClass
-from deviceNetwork.DeepSleepNetwork import DeepSleepNetwork
+from deepsleepController.DeepSleepController import DeepSleepController
 
 DEEPSLEEP_TEST_MENU_CONFIGURATION_FILE = os.path.join(dir_path, "vts_deepsleep_testMenuConfiguration.yaml")
 DEEPSLEEP_TESTCASES_CONFIGURATION_FILE = os.path.join(os.path.join(dir_path, "../configs"), "vts_deepsleep_testcase_configuration.yaml")
 DEEPSLEEP_L3_TEST_CONFIG_FILE = os.path.join(os.path.join(dir_path, "../../test_configuration"), "vts_l3_DeepSleep.yaml")
+
+DEEPSLEEP_L3_TEST_SUITE_NAME = "VTS_L3_DEEPSLEEP"
 
 class deepsleepHelperClass(utHelperClass):
 
@@ -75,7 +77,7 @@ class deepsleepHelperClass(utHelperClass):
         self.testMenuConfiguration.test.execute = self.testMenuConfiguration.test.execute + f" -p {profileOnTarget}"
         self.l3TestConfigFolder = os.path.join(self.targetWorkspace, "test_configuration")
         self.l3TestConfigFolder = self.l3TestConfigFolder.replace("\\", "/")
-        self.power_level = 1.0
+        self.power_level = 0.0
 
         # Establish HAL session
         self.hal_session = self.dut.getConsoleSession("ssh_hal_test")
@@ -101,12 +103,14 @@ class deepsleepHelperClass(utHelperClass):
         self.hal_session_1.write(f"./{self.cpe.get('deepsleep_process_name')} &")
         time.sleep(2)
 
-        self.deepsleepDevice = DeepSleepNetwork(self.platform, self.device_type, self.hal_session_1,
+        self.deepsleepDevice = DeepSleepController(self.platform, self.device_type, self.hal_session_1,
                                         self.cpe.get("prompt"), self.deviceTestSetup.get("controller_port"))
 
     def getPowerLevel(self) -> float:
-        controlclass = self.dut.powerControl
-        power = controlclass.getPowerLevel()
+        if (self.platform == "vDevice"):
+            power = 1.0
+        else:
+            power = self.powerControl.getPowerLevel()
         return power
 
     def updateTestconfigurationFile(self, intrigger: list, outtrigger: list, timer: int=0, threadwaittime: int=5, keycode: int=0):
@@ -122,12 +126,44 @@ class deepsleepHelperClass(utHelperClass):
         node["Expected_Results"]["expectedwaittime"] = threadwaittime
         node["Expected_Results"]["output_wokeUpByTriggers"] = outtrigger
 
-        if any(x in outtrigger for x in ["RCU_IR", "RCU_BT", "RCU_RF4CE"]):
-            node["Expected_Results"]["output_keycode"] = keycode
-        else:
-            node["Expected_Results"].pop("output_keycode", None)
+        node["Expected_Results"]["output_keycode"] = keycode
+
         # write to YAML
         self.deepsleepWriteYaml(self.l3TestConfigFile, data)
+
+    def executeAndVerifyResult(self, inputlist: list, outputlist: list, timer: int=0, threadwaittime: int=5, keycode: int=0) -> bool:
+            results = False
+            self.updateTestconfigurationFile(inputlist, outputlist, timer, threadwaittime, keycode)
+            self.utilities.sftpCopy(self.hal_session, self.l3TestConfigFile, self.l3TestConfigFolder)
+            self.wakeuptriggerThreadObj1 = threading.Thread(target=self.wakeuptriggerThread, args=(outputlist[0], threadwaittime))
+            self.utMenu.start()
+            self.wakeuptriggerThreadObj1.start()
+            self.log.stepStart(f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: {self.testcase}')
+            output = self.utMenu.select(DEEPSLEEP_L3_TEST_SUITE_NAME, self.testcase, None, self.waitTime, False)
+            self.wakeuptriggerThreadObj1.join()
+            results = self.utMenu.collect_results(output, True)
+            if results is None:
+                results = False
+            self.log.stepResult(results, f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: {self.testcase}')
+    
+            self.log.stepStart(f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: check_power_level')
+            self.profileConfiguration = ConfigRead(self.moduleHFPFile, self.interfaceName)
+            expected_power = self.profileConfiguration.expected_power_level
+            if (self.power_level == expected_power):
+                results = True
+            else:
+                results = False
+            self.log.stepResult(results, f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: check_power_level{self.power_level}')
+            return results
+
+    def wakeuptriggerThread(self, trigger: str, threadwaittime: int=5):
+        """
+        Thread function to send messages to DUT
+        """
+        time.sleep(threadwaittime)  # Wait for DUT to be ready to trigger wakeup
+        self.power_level = self.getPowerLevel()
+        self.deepsleepDevice.triggerWakeup(trigger)
+        time.sleep(1)  # Small delay between messages
 
     def deepsleepReadYaml(self, yaml_path: str) -> dict:
         """

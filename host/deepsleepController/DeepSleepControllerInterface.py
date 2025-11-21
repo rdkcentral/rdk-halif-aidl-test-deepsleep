@@ -23,7 +23,7 @@
 
 from abc import ABCMeta, abstractmethod
 
-class DeepSleepDeviceInterface(metaclass=ABCMeta):
+class DeepSleepControllerInterface(metaclass=ABCMeta):
     """
     Abstract base class defining DEEPSLEEP interface.
     Both virtual and actual DEEPSLEEP implementations must inherit this.

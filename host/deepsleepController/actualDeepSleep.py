@@ -34,9 +34,9 @@ sys.path.append(os.path.join(dir_path, "../"))
 from raft.framework.plugins.ut_raft.configRead import ConfigRead
 from raft.framework.plugins.ut_raft.utBaseUtils import utBaseUtils
 from raft.framework.plugins.ut_raft.utPlaneController import utPlaneController
-from host.deviceNetwork.DeepSleepDeviceInterface import DeepSleepDeviceInterface
+from deepsleepController.DeepSleepControllerInterface import DeepSleepControllerInterface
 
-class aDeepSleep(DeepSleepDeviceInterface):
+class actualDeepSleep(DeepSleepControllerInterface):
     """
     DEEPSLEEP related utility functions
     """

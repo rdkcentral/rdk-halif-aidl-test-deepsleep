@@ -123,8 +123,7 @@ UT_ADD_TEST(VTS_L3_DEEPSLEEP, EnterDeepSleep)
     bool result;
     com::rdk::hal::deepsleep::Capabilities caps;
     DEEPSLEEP_GET_CAPABILITY(gDEEPSLEEPHandle, caps);
-    if ((isTriggerSupported(testConfiguration.input_triggersToWakeUpon, WakeUpTrigger::TIMER)) ||
-        (isTriggerSupported(caps.preconfiguredTriggers, WakeUpTrigger::TIMER))) {
+    if ((isTriggerSupported(testConfiguration.input_triggersToWakeUpon, WakeUpTrigger::TIMER))) {
             UT_LOG_INFO("TIMER trigger is in inputtrigger/preconfigure list\n");
             DEEPSLEEP_SET_TIMER(gDEEPSLEEPHandle, testConfiguration.timer, result);
             UT_ASSERT_TRUE(result);
@@ -140,6 +139,7 @@ UT_ADD_TEST(VTS_L3_DEEPSLEEP, EnterDeepSleep)
     auto timeAfterSleep = std::chrono::system_clock::now();
     UT_ASSERT_TRUE(result);
     for (size_t i = 0; i < wokeUpByTriggers.size(); i++) {
+        UT_LOG_INFO("wokeUpByTriggers(%d): %d", i, wokeUpByTriggers[i]);
         UT_ASSERT_TRUE(isTriggerSupported(testConfiguration.output.output_wokeUpByTriggers, wokeUpByTriggers[i]));
         if (wokeUpByTriggers[i] == WakeUpTrigger::RCU_IR ||  wokeUpByTriggers[i] == WakeUpTrigger::RCU_BT || wokeUpByTriggers[i] == WakeUpTrigger::RCU_RF4CE) {
             UT_ASSERT_TRUE(kCode.has_value());

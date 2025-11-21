@@ -38,69 +38,43 @@ from vts_deepsleep_helper import deepsleepHelperClass
 
 DEEPSLEEP_L3_TEST_SUITE_NAME = "VTS_L3_DEEPSLEEP"
 
-class  VTS_DEEPSLEEP_L3_WakeFromPreconfiguredTrigger(deepsleepHelperClass):
+class  VTS_DEEPSLEEP_L3_VerifyWakeWithMixedInputTriggerList(deepsleepHelperClass):
     """
-    Runs L3 WakeFromPreconfiguredTrigger test
+    Runs L3 VerifyWakeWithMixedInputTriggerList test
     """
     def __init__(self, log:logModule=None):
         """
         Initializes the test class
         """
-        self.testName = "DeepSleep_L3_WakeFromPreconfiguredTrigger"
+        self.testName = "DeepSleep_L3_VerifyWakeWithMixedInputTriggerList"
         qcId = "1"
 
         super().__init__(self.testName, qcId, log)
 
-    def wakeuptriggerThread(self, trigger: str, threadwaittime: int=5):
-        """
-        Thread function to send messages to DUT
-        """
-        #self.power_level = self.getPowerLevel() #TODO for actual device to measure power
-        time.sleep(threadwaittime)  # Wait for DUT to be ready to trigger wakeup
-        self.deepsleepDevice.triggerWakeup(trigger)
-        time.sleep(1)  # Small delay between messages
-
     def testFunction(self):
         """
-        The main test function to run the L3 ReceiveMessage.
+        The main test function to run the L3 to Verify the deepsleep wake up with mixed triggers
 
         Returns:
-            bool: Final result of the test.
+            bool: Final result of the deep sleep test, including power-level validation.
         """
         self.utilities.change_directory(self.hal_session, self.targetWorkspace)
         results = False
         self.testcase = "EnterDeepSleep"
 
-        inputlist = []
-        outputlist = ["RCU_IR"]
-        threadwaittime = 2
-        keycode = 6
-        self.updateTestconfigurationFile(inputlist, outputlist, 10, threadwaittime, keycode)
-        self.utilities.sftpCopy(self.hal_session, self.l3TestConfigFile, self.l3TestConfigFolder)
-        self.wakeuptriggerThreadObj1 = threading.Thread(target=self.wakeuptriggerThread, args=("RCU_IR", threadwaittime))
-        self.utMenu.start()
-        self.wakeuptriggerThreadObj1.start()
-        self.log.stepStart(f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: {self.testcase}')
-        output = self.utMenu.select(DEEPSLEEP_L3_TEST_SUITE_NAME, self.testcase, None, self.waitTime, False)
-        self.wakeuptriggerThreadObj1.join()
-        results = self.utMenu.collect_results(output, True)
-        if results is None:
-            results = False
-        self.log.stepResult(results, f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: {self.testcase}')
-
-        self.log.stepStart(f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: check_power_level')
         self.profileConfiguration = ConfigRead(self.moduleHFPFile, self.interfaceName)
-        expected_power = self.profileConfiguration.expected_power_level
-        if (self.power_level == expected_power):
-            results = True
-        else:
-            results = False
-        self.log.stepResult(results, f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: check_power_level')
+        supported_triggers = supported_triggers = [x for x in self.profileConfiguration.supportedTriggers if x != "TIMER"]
+        inputlist = supported_triggers
+        for trigger in supported_triggers:
+            outputlist = [trigger]
+            threadwaittime = 2
+            keycode = self.cpe.get("remote").get("deepsleep").get(trigger)
+            results = self.executeAndVerifyResult(inputlist, outputlist, 10, threadwaittime, keycode)
 
         return results
 
 if __name__ == '__main__':
     summaryLogName = os.path.splitext(os.path.basename(__file__))[0] + "_summery"
     summaryLog  = logModule(summaryLogName, level=logModule.INFO)
-    test = VTS_DEEPSLEEP_L3_WakeFromPreconfiguredTrigger(summaryLog )
+    test = VTS_DEEPSLEEP_L3_VerifyWakeWithMixedInputTriggerList(summaryLog )
     test.run(False)
