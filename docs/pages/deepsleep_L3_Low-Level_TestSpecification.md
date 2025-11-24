@@ -34,7 +34,7 @@ The goal is to ensure that:
 ### References
 
 - `High Level Test Specification` - [deepsleep_High-Level_TestSpecification.md](deepsleep_High-Level_TestSpecification.md)
-- [DEEPSLEEP AIDL interface](https://github.com/rdkcentral/rdk-halif-aidl/tree/main/deepsleep/current/com/rdk/hal/deepsleep)
+- [DEEPSLEEP AIDL interface](https://github.com/rdkcentral/rdk-halif-aidl/tree/0.12.0/deepsleep/current/com/rdk/hal/deepsleep)
 
 ## Level 3 Test Specification
 
@@ -187,4 +187,5 @@ Verify that the `DUT` doest'nt wakeup on below scenarios.
 - Configure the `Deepsleep` wakeup controller.
 - Put `DUT` into DeepSleep by starting `VTS` binary
 - Apply wake trigger from RAFT using unsupported trigger
+
 - Verify no `DUT` wake up
