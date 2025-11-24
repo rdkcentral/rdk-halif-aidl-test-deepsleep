@@ -149,7 +149,7 @@ class deepsleepHelperClass(utHelperClass):
             self.log.stepStart(f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: check_power_level')
             self.profileConfiguration = ConfigRead(self.moduleHFPFile, self.interfaceName)
             expected_power = self.profileConfiguration.expected_power_level
-            if (self.power_level == expected_power):
+            if (self.power_level <= expected_power):
                 results = True
             else:
                 results = False

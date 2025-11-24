@@ -21,12 +21,12 @@ DeepSleep:
   L3:
     EnterDeepSleep:
       Parameters:
-        timer: 1
+        timer: 1 #settimer value in seconds
         input_triggersToWakeUpon:
           - TIMER
           - FRONT_PANEL
       Expected_Results:
-        expectedwaittime: 2
+        expectedwaittime: 2 #expected time in seconds DUT will be in deepsleep
         output_wokeUpByTriggers:
           - TIMER
           - FRONT_PANEL
