@@ -311,7 +311,7 @@ Verify that the `DUT` wakes on preconfigured triggers, even without specifying i
 
 **Test Flow:**
 
-- Deploy `VTS` binaries to `DUT`.
+- Copy the VTS binaries to the target device.
 - Configure the `Deepsleep` wakeup controller.
 - Put `DUT` into DeepSleep by starting `VTS` binary with no explicit triggers
 - Apply wake trigger from RAFT using preconfigured trigger
@@ -335,7 +335,7 @@ Verify that the `DUT` wakes up exactly from the any oe of the input trigger spec
 
 **Test Flow:**
 
-- Deploy `VTS` binaries to `DUT`.
+- Copy the VTS binaries to the target device.
 - Configure the `Deepsleep` wakeup controller.
 - Put `DUT` into DeepSleep by starting `VTS` binary with mltiple trigger in input list
 - Apply wake trigger from RAFT 
@@ -361,8 +361,9 @@ Verify that the `DUT` doest'nt wakeup on below scenarios.
 
 **Test Flow:**
 
-- Deploy `VTS` binaries to `DUT`.
+- Copy the VTS binaries to the target device.
 - Configure the `Deepsleep` wakeup controller.
 - Put `DUT` into DeepSleep by starting `VTS` binary
 - Apply wake trigger from RAFT using unsupported trigger
+
 - Verify no `DUT` wake up
