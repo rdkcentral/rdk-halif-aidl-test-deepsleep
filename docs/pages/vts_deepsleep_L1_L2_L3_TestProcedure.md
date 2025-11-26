@@ -205,7 +205,6 @@ deviceConfig:
         model:      "VTV"     # Model (optional)
         soc_vendor: "intel"   #soc vendor
         target_directory: "/tmp/" # Directory on target to which binaries will be copied
-        device_type: ["TV"] # Possible values: ["TV", "RecordingDevice", "Tuner", "PlaybackDevice", "AudioSystem", "VideoProcessor", "PureCecSwitch", "Reserved"]
         prompt: "~#" # Prompt string on console
         wait_time: 240 # Configurable timeout value to limit the total duration of individual tests
         test:

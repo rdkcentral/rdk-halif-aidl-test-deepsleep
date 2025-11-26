@@ -29,8 +29,7 @@ class DeepSleepControllerInterface(metaclass=ABCMeta):
     Both virtual and actual DEEPSLEEP implementations must inherit this.
     """
 
-    def __init__(self, device_type: list, session, process_name: str="", bin_path: str="", prompt: str = "~#", port: int = 8080):
-        self.device_type = device_type
+    def __init__(self, session, process_name: str="", bin_path: str="", prompt: str = "~#", port: int = 8080):
         self.session = session
         self.bin_path = bin_path
         self.process_name = process_name

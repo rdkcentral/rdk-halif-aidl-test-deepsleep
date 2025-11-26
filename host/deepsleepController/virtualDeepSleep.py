@@ -40,7 +40,7 @@ class virtualDeepSleep(DeepSleepControllerInterface):
     """
     DEEPSLEEP related utility functions
     """
-    def __init__(self, device_type:str, session, prompt: str="~#", port:int=8080):
+    def __init__(self, session, prompt: str="~#", port:int=8080):
         """
         Initializes the class
         """

@@ -17,7 +17,7 @@ The objective of `L3` testing is to validate deepsleep wakeup from various trigg
 The goal is to ensure that:
 - The DUT correctly enters `DeepSleep`.
 - The DUT wakes up only from expected wake-up triggers.
-- Lower Power consumption in `DeepSleep` mode.
+- Validate Lower Power consumption in `DeepSleep` mode.
 
 ### Acronyms, Terms and Abbreviations
 

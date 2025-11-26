@@ -67,7 +67,6 @@ class deepsleepHelperClass(utHelperClass):
         profileOnTarget = os.path.join(profileOnTarget, os.path.basename(self.moduleHFPFile))
         profileOnTarget = profileOnTarget.replace("\\", "/")
         self.waitTime = self.cpe.get("wait_time")
-        self.device_type = self.cpe.get("device_type")
         self.platform = self.cpe.get("platform")
 
         # Load test menu and test case configuration files
@@ -103,7 +102,7 @@ class deepsleepHelperClass(utHelperClass):
         self.hal_session_1.write(f"./{self.cpe.get('deepsleep_process_name')} &")
         time.sleep(2)
 
-        self.deepsleepDevice = DeepSleepController(self.platform, self.device_type, self.hal_session_1,
+        self.deepsleepDevice = DeepSleepController(self.platform, self.hal_session_1,
                                         self.cpe.get("prompt"), self.deviceTestSetup.get("controller_port"))
 
     def getPowerLevel(self) -> float:

@@ -26,12 +26,11 @@ class DeepSleepController:
     Wrapper class to instantiate the correct DEEPSLEEP implementation.
     """
 
-    def __init__(self, mode: str, device_type: list, session, process_name: str="",bin_path: str="", prompt="~#", port=8080):
+    def __init__(self, mode: str, session, process_name: str="",bin_path: str="", prompt="~#", port=8080):
         """
         Initializes the class
         Args:
             mode (str): "vDevice" for virtual DEEPSLEEP, "aDevice" for actual DEEPSLEEP
-            device_type (list): device type
             session: console session
             process_name (str, optional): Process name of DEEPSLEEP binary. Defaults to "".
             bin_path (str, optional): Path to DEEPSLEEP binary. Defaults to "".
@@ -40,11 +39,11 @@ class DeepSleepController:
         """
         if mode == "vDevice":
             from .virtualDeepSleep import virtualDeepSleep
-            self.deepsleep = virtualDeepSleep(device_type, session, prompt, port)
+            self.deepsleep = virtualDeepSleep(session, prompt, port)
         else:
             #TODO: Add actual DEEPSLEEP implementation here
             from .actualDeepSleep import actualDeepSleep
-            self.deepsleep = actualDeepSleep(device_type, session, prompt, port)
+            self.deepsleep = actualDeepSleep(session, prompt, port)
 
     def __getattr__(self, name):
         """Delegate method/attribute access to underlying instance."""

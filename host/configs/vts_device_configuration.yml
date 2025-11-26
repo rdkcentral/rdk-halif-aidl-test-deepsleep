@@ -29,7 +29,6 @@ deviceConfig:
         soc_vendor: "intel"
         target_directory: "/home/root/"
         deepsleep_process_name: "Vendor-DeepSleep"
-        device_type: ["TV"] # Possible values: ["TV", "RecordingDevice", "Tuner", "PlaybackDevice", "AudioSystem", "VideoProcessor", "PureCecSwitch", "Reserved"]
         prompt: "~#" # Prompt string on console
         wait_time: 240 #Configurable timeout value to limit the total duration of individual tests
         test:
