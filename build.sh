@@ -234,6 +234,7 @@ install_test()
     install -t ${INSTALL_PATH} run.sh
 
     cp -r ${PROFILES_DIR} ${INSTALL_PATH}
+    cp -r "${TOP}/test_configuration" ${INSTALL_PATH}
     cp -r "${TOP}/vcomponent/vcomponent_configurations" ${INSTALL_PATH}
     cp -r "${TOP}/vcomponent/deepsleep_populate_controlPlane.sh" ${INSTALL_PATH}
 

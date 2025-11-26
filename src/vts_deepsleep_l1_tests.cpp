@@ -64,7 +64,6 @@
 #include "com/rdk/hal/deepsleep/IDeepSleep.h"
 #include "ut_log.h"
 
-#define MAX_LENGTH 256
 #define SUPPORTEDLIST_NODE "IDeepSleep.supportedTriggers"
 #define PRECONFIGUREDLIST_NODE "IDeepSleep.preconfiguredTriggers"
 extern sp<IDeepSleep> gDEEPSLEEPHandle;
