@@ -364,5 +364,35 @@ Verify that the `DUT` doest'nt wakeup on below scenarios.
 - Configure the `Deepsleep` wakeup controller.
 - Put `DUT` into DeepSleep by starting `VTS` binary
 - Apply wake trigger from RAFT using unsupported trigger
-
 - Verify no `DUT` wake up
+
+## Note
+
+### Test Setup on vDevice
+
+To validate automation on vDevice, create a password for the root user using the following command:
+
+```bash
+passwd root
+```
+
+Then, update the same password in the `vts_rack_configuration.yaml` file.
+
+Currently, the Python `paramiko` library does not support empty passwords on vDevice, so setting a password is necessary.
+
+### Run on Windows Environment
+
+To run the Python environment tests in a Windows environment, follow these additional steps after checking out the repository and compiling the code:
+
+1. Install the python environment and update the rack configuration files as in the Linux environment.
+
+2. Move the entire project folder (including `host`) to the Windows machine.
+
+3. Open the file located at `framework/plugins/ut_raft/interactive_shell.py`.
+
+   - Comment out or remove the following import lines to avoid errors on Windows:
+     ```python
+     import pty
+     import fcntl
+     ```
+4. After these changes, run the test cases using Python on the Windows system.

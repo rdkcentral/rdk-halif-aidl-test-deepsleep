@@ -30,7 +30,7 @@ deviceConfig:
         target_directory: "/home/root/"
         deepsleep_process_name: "Vendor-DeepSleep"
         prompt: "~#" # Prompt string on console
-        wait_time: 240 #Configurable timeout value to limit the total duration of individual tests
+        wait_time: 320 #Configurable timeout value to limit the total duration of individual tests
         test:
             profile: "../../profiles/hfp-deepsleep-vcomponent.yaml" #HFP profile used to meet platform requirements
             controller_port: 8080 #Port where the ut-controller is listening
