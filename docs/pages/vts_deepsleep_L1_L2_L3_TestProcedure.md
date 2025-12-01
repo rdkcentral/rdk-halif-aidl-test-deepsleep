@@ -123,6 +123,7 @@ Run the following command to execute the VTS test:
 ```bash
 ./run.sh -p profiles/hfp-deepsleep_vcomponent.yaml
 ```
+Note: The `bufferduration` in `profiles/hfp-deepsleep_vcomponent.yaml` needs to be updated based on the test environment(SOC and OS)
 
 ## Run Tests in Python Environment
 
@@ -206,7 +207,7 @@ deviceConfig:
         soc_vendor: "intel"   #soc vendor
         target_directory: "/tmp/" # Directory on target to which binaries will be copied
         prompt: "~#" # Prompt string on console
-        wait_time: 240 # Configurable timeout value to limit the total duration of individual tests
+        wait_time: 320 #Configurable timeout value to limit the total duration of individual tests. It will differ based on the test environment(SOC and OS)
         test:
             profile: "../../profiles/hfp-deepsleep_vcomponent.yaml" #HFP profile used to meet platform requirements
             controller_port: 8080 # Port where the ut-controller is listening
@@ -217,6 +218,7 @@ deviceConfig:
                 RCU_RF4CE: 8
 
 ```
+Note: The `wait_time` value needs to be updated based on the test environment(SOC and OS)
 
 ### Install the Python Packages
 
@@ -396,3 +398,4 @@ To run the Python environment tests in a Windows environment, follow these addit
      import fcntl
      ```
 4. After these changes, run the test cases using Python on the Windows system.
+
