@@ -64,15 +64,17 @@ class deepsleepHelperClass(utHelperClass):
         # Parse device configuration
         self.deviceTestSetup = self.cpe.get("test")
         self.targetWorkspace = os.path.join(self.cpe.get("target_directory"), self.moduleName)
-        if hfpfile is not None:
-            self.moduleHFPFile = os.path.join(dir_path, hfpfile)
-        else:
-            self.moduleHFPFile = os.path.join(dir_path, self.deviceTestSetup.get("profile"))
+        profilefile_fromconfig = self.deviceTestSetup.get("profile")
+        # The moduleHFPFile should be the file available in deepsleep/profiles path
+        profilefile_tmp = hfpfile or profilefile_fromconfig
+        self.moduleHFPFile = os.path.join(dir_path, profilefile_tmp)
+
         profileOnTarget = os.path.join(self.targetWorkspace, "profiles")
         if (self.moduleName == "VTS"):
-            unifiedHFPFile = os.path.join(dir_path, self.deviceTestSetup.get("profile"))
-            profileOnTarget = os.path.join(profileOnTarget, os.path.basename(unifiedHFPFile))
+            # profileOnTarget for unifiedVTS is the one available in profiles path of unifiedVTS repo
+            profileOnTarget = os.path.join(profileOnTarget, os.path.basename(profilefile_fromconfig))
         else:
+            # profileOnTarget for specificmodule is the one available in profiles path of test repo
             profileOnTarget = os.path.join(profileOnTarget, os.path.basename(self.moduleHFPFile))
         profileOnTarget = profileOnTarget.replace("\\", "/")
         self.waitTime = self.cpe.get("wait_time")
@@ -81,6 +83,7 @@ class deepsleepHelperClass(utHelperClass):
         # Load test menu and test case configuration files
         self.l3TestConfigFile = DEEPSLEEP_L3_TEST_CONFIG_FILE
         if testMenuConfigFile is not None:
+            # this if code part is for unifiedVTS
             deepsleepTestMenuConfigFile = testMenuConfigFile
         else:
             deepsleepTestMenuConfigFile = DEEPSLEEP_TEST_MENU_CONFIGURATION_FILE
@@ -107,6 +110,7 @@ class deepsleepHelperClass(utHelperClass):
             if artifactDirPath is None:
                 filesPath = os.path.join(dir_path, artifact)
             else:
+                # this if code part is for unifiedVTS
                 filesPath = os.path.join(artifactDirPath, artifact)
             self.hal_session.write("ls " + self.targetWorkspace + "/" + os.path.basename(artifact) + "\n")
             res = self.hal_session.read_until(self.hal_session.prompt, timeout=5)
