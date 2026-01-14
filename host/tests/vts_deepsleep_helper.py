@@ -86,7 +86,7 @@ class deepsleepHelperClass(utHelperClass):
             deepsleepTestMenuConfigFile = DEEPSLEEP_TEST_MENU_CONFIGURATION_FILE
 
         self.testMenuConfiguration = ConfigRead(deepsleepTestMenuConfigFile, self.moduleName)
-        if moduleName is None:
+        if (self.moduleName != "VTS"):
             self.testCaseConfiguration = ConfigRead(DEEPSLEEP_TESTCASES_CONFIGURATION_FILE, self.moduleName) # Only needed while running individual tests
         self.testMenuConfiguration.test.execute = self.testMenuConfiguration.test.execute + f" -p {profileOnTarget}"
         self.l3TestConfigFolder = os.path.join(self.targetWorkspace, "test_configuration")
