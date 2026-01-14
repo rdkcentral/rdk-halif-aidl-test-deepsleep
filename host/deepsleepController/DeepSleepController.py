@@ -26,7 +26,7 @@ class DeepSleepController:
     Wrapper class to instantiate the correct DEEPSLEEP implementation.
     """
 
-    def __init__(self, mode: str, session, process_name: str="",bin_path: str="", prompt="~#", port=8080):
+    def __init__(self, mode: str, session, process_name: str="",bin_path: str="", vcomponentProfile:str="", prompt: str="~#", port:int=8080):
         """
         Initializes the class
         Args:
@@ -39,11 +39,11 @@ class DeepSleepController:
         """
         if mode == "vDevice":
             from .virtualDeepSleep import virtualDeepSleep
-            self.deepsleep = virtualDeepSleep(session, prompt, port)
+            self.deepsleep = virtualDeepSleep(session, process_name, bin_path, vcomponentProfile, prompt, port)
         else:
             #TODO: Add actual DEEPSLEEP implementation here
             from .actualDeepSleep import actualDeepSleep
-            self.deepsleep = actualDeepSleep(session, prompt, port)
+            self.deepsleep = actualDeepSleep(session, process_name, bin_path, prompt, port)
 
     def __getattr__(self, name):
         """Delegate method/attribute access to underlying instance."""

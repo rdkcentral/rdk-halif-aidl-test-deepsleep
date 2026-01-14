@@ -40,7 +40,7 @@ class actualDeepSleep(DeepSleepControllerInterface):
     """
     DEEPSLEEP related utility functions
     """
-    def __init__(self, session, prompt: str="~#", port:int=8080):
+    def __init__(self, session, process_name: str="", bin_path: str="", prompt: str="~#", port:int=8080):
         """
         Initializes the class
         """
