@@ -33,7 +33,7 @@ deviceConfig:
         wait_time: 320 #Configurable timeout value to limit the total duration of individual tests. It will differ based on the test environment(SOC and OS)
         test:
             profile: "../../profiles/hfp-deepsleep-vcomponent.yaml" #HFP profile used to meet platform requirements
-            controller_port: 8080 #Port where the ut-controller is listening
+            deepsleep_controller_port: 8080 #Port where the ut-controller is listening
             deepsleep_vcomponent_profile: "../../vcomponent/vcomponent_configurations/deepsleep_vcomponent_configuration.yaml"
         remote:
             deepsleep:

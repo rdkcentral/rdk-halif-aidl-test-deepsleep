@@ -69,12 +69,13 @@ class deepsleepHelperClass(utHelperClass):
         profileFileTmp = hfpfile or profileFileFromFonfig
         self.moduleHFPFile = os.path.join(dir_path, profileFileTmp)
 
-        profileOnTarget = os.path.join(self.targetWorkspace, "profiles")
         if (self.moduleName == "VTS"):
             # profileOnTarget for unifiedVTS is the one available in profiles path of unifiedVTS repo
+            profileOnTarget = os.path.join(self.targetWorkspace, "bin", "profiles")
             profileOnTarget = os.path.join(profileOnTarget, os.path.basename(profileFileFromFonfig))
         else:
             # profileOnTarget for specificmodule is the one available in profiles path of test repo
+            profileOnTarget = os.path.join(self.targetWorkspace, "profiles")
             profileOnTarget = os.path.join(profileOnTarget, os.path.basename(self.moduleHFPFile))
         profileOnTarget = profileOnTarget.replace("\\", "/")
         self.waitTime = self.cpe.get("wait_time")
@@ -92,7 +93,10 @@ class deepsleepHelperClass(utHelperClass):
         if (self.moduleName != "VTS"):
             self.testCaseConfiguration = ConfigRead(DEEPSLEEP_TESTCASES_CONFIGURATION_FILE, self.moduleName) # Only needed while running individual tests
         self.testMenuConfiguration.test.execute = self.testMenuConfiguration.test.execute + f" -p {profileOnTarget}"
-        self.l3TestConfigFolder = os.path.join(self.targetWorkspace, "test_configuration")
+        if (self.moduleName == "VTS"):
+            self.l3TestConfigFolder = os.path.join(self.targetWorkspace, "bin", "test_configuration")
+        else:
+            self.l3TestConfigFolder = os.path.join(self.targetWorkspace, "test_configuration")
         self.l3TestConfigFolder = self.l3TestConfigFolder.replace("\\", "/")
         self.power_level = 0.0
 
@@ -124,15 +128,21 @@ class deepsleepHelperClass(utHelperClass):
                 target_tarfile = target_tarfile.replace("\\", "/")
                 self.utilities.untar(self.hal_session, target_tarfile, self.targetWorkspace)
 
+        if (self.moduleName == "VTS"):
+            #unified VTS repo target workspace needs a /bin/ after module name
+            self.targetWorkspace = os.path.join(self.targetWorkspace, "bin")
+            self.targetWorkspace = self.targetWorkspace.replace("\\", "/")
+
         #TODO: remove once the vendor layer start handled by vDevice service
         if (self.moduleName != "VTS"):
+            # Service start only needed while running individual tests, in unified case start_services.sh will take care of starting it
             self.utilities.change_directory(self.hal_session_1, self.targetWorkspace)
             self.hal_session_1.write(f"./{self.cpe.get('deepsleep_process_name')} &")
             time.sleep(2)
 
         self.componentConfigFile = self.deviceTestSetup.get("deepsleep_vcomponent_profile")
         self.deepsleepDevice = DeepSleepController(self.platform, self.hal_session_1,
-                                        prompt = self.cpe.get("prompt"), port = self.deviceTestSetup.get("controller_port"), vcomponentProfile=self.componentConfigFile)
+                                        prompt = self.cpe.get("prompt"), port = self.deviceTestSetup.get("deepsleep_controller_port"), vcomponentProfile=self.componentConfigFile)
 
     def getPowerLevel(self) -> float:
         if (self.platform == "vDevice"):
