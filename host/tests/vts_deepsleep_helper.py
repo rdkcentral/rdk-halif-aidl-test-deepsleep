@@ -64,15 +64,15 @@ class deepsleepHelperClass(utHelperClass):
         # Parse device configuration
         self.deviceTestSetup = self.cpe.get("test")
         self.targetWorkspace = os.path.join(self.cpe.get("target_directory"), self.moduleName)
-        profilefile_fromconfig = self.deviceTestSetup.get("profile")
+        profileFileFromFonfig = self.deviceTestSetup.get("profile")
         # The moduleHFPFile should be the file available in deepsleep/profiles path
-        profilefile_tmp = hfpfile or profilefile_fromconfig
-        self.moduleHFPFile = os.path.join(dir_path, profilefile_tmp)
+        profileFileTmp = hfpfile or profileFileFromFonfig
+        self.moduleHFPFile = os.path.join(dir_path, profileFileTmp)
 
         profileOnTarget = os.path.join(self.targetWorkspace, "profiles")
         if (self.moduleName == "VTS"):
             # profileOnTarget for unifiedVTS is the one available in profiles path of unifiedVTS repo
-            profileOnTarget = os.path.join(profileOnTarget, os.path.basename(profilefile_fromconfig))
+            profileOnTarget = os.path.join(profileOnTarget, os.path.basename(profileFileFromFonfig))
         else:
             # profileOnTarget for specificmodule is the one available in profiles path of test repo
             profileOnTarget = os.path.join(profileOnTarget, os.path.basename(self.moduleHFPFile))
