@@ -64,8 +64,8 @@
 #include "com/rdk/hal/deepsleep/IDeepSleep.h"
 #include "ut_log.h"
 
-#define SUPPORTEDLIST_NODE "IDeepSleep.supportedTriggers"
-#define PRECONFIGUREDLIST_NODE "IDeepSleep.preconfiguredTriggers"
+#define SUPPORTEDLIST_NODE "deepsleep.supportedTriggers"
+#define PRECONFIGUREDLIST_NODE "deepsleep.preconfiguredTriggers"
 extern sp<IDeepSleep> gDEEPSLEEPHandle;
 
 /* Test class registration with UT_Core */
