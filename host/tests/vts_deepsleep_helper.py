@@ -51,7 +51,7 @@ class deepsleepHelperClass(utHelperClass):
         Initializes the test class
         """
         self.moduleName = "DeepSleep"
-        self.interfaceName = "IDeepSleep"
+        self.interfaceName = "deepsleep"
         super().__init__(testName, qcId, log)
 
         self.log = log

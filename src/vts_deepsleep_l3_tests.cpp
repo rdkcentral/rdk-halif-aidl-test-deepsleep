@@ -150,7 +150,7 @@ UT_ADD_TEST(VTS_L3_DEEPSLEEP, EnterDeepSleep)
     }
     auto sleepDuration = std::chrono::duration_cast<std::chrono::seconds>(timeAfterSleep - timeBeforeSleep).count();
     UT_LOG_INFO("Time taken by deepsleep %lld seconds (expectedwaittime ~%d)", sleepDuration, testConfiguration.output.expectedwaittime);
-    uint32_t buffertime = UT_KVP_PROFILE_GET_UINT32("IDeepSleep.bufferduration");
+    uint32_t buffertime = UT_KVP_PROFILE_GET_UINT32("deepsleep.bufferduration");
     UT_ASSERT_TRUE(std::abs(sleepDuration - testConfiguration.output.expectedwaittime) <= buffertime);
     return;
 }
