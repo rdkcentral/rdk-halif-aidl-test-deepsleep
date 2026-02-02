@@ -53,7 +53,7 @@ class deepsleepHelperClass(utHelperClass):
         if moduleName is None:
             moduleName = "DeepSleep"
         self.moduleName = moduleName
-        self.interfaceName = "IDeepSleep"
+        self.interfaceName = "deepsleep"
         super().__init__(testName, qcId, log)
 
         self.log = log

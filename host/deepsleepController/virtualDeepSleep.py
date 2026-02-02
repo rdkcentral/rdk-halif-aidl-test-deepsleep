@@ -166,58 +166,58 @@ class virtualDeepSleep(DeepSleepControllerInterface):
         # Not included TIMER as tested in L2
         if trigger == "RCU_IR":
             yaml_content = (
-                "IDeepSleep:\n"
+                "deepsleep:\n"
                 "  command: \"DEEPSLEEP_WAKEUP\"\n"
                 "  trigger: RCU_IR\n"
                 "  keycode: 6\n"
             )
         elif trigger == "RCU_BT":
             yaml_content = (
-                "IDeepSleep:\n"
+                "deepsleep:\n"
                 "  command: \"DEEPSLEEP_WAKEUP\"\n"
                 "  trigger: RCU_BT\n"
                 "  keycode: 7\n"
             )
         elif trigger == "RCU_RF4CE":
             yaml_content = (
-                "IDeepSleep:\n"
+                "deepsleep:\n"
                 "  command: \"DEEPSLEEP_WAKEUP\"\n"
                 "  trigger: RCU_RF4CE\n"
                 "  keycode: 8\n"
             )
         elif trigger == "LAN":
             yaml_content = (
-                "IDeepSleep:\n"
+                "deepsleep:\n"
                 "  command: \"DEEPSLEEP_WAKEUP\"\n"
                 "  trigger: LAN\n"
             )
         elif trigger == "WLAN":
             yaml_content = (
-                "IDeepSleep:\n"
+                "deepsleep:\n"
                 "  command: \"DEEPSLEEP_WAKEUP\"\n"
                 "  trigger: WLAN\n"
             )
         elif trigger == "FRONT_PANEL":
             yaml_content = (
-                "IDeepSleep:\n"
+                "deepsleep:\n"
                 "  command: \"DEEPSLEEP_WAKEUP\"\n"
                 "  trigger: FRONT_PANEL\n"
             )
         elif trigger == "CEC":
             yaml_content = (
-                "IDeepSleep:\n"
+                "deepsleep:\n"
                 "  command: \"DEEPSLEEP_WAKEUP\"\n"
                 "  trigger: CEC\n"
             )
         elif trigger == "PRESENCE":
             yaml_content = (
-                "IDeepSleep:\n"
+                "deepsleep:\n"
                 "  command: \"DEEPSLEEP_WAKEUP\"\n"
                 "  trigger: PRESENCE\n"
             )
         elif trigger == "VOICE":
             yaml_content = (
-                "IDeepSleep:\n"
+                "deepsleep:\n"
                 "  command: \"DEEPSLEEP_WAKEUP\"\n"
                 "  trigger: VOICE\n"
             )
