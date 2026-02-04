@@ -1,103 +1,31 @@
-# Testing Suite For DEEPSLEEP HAL
+# Test Suite For DEEPSLEEP HAL
 
-## Build Steps
+## Table of Contents
 
-### 1. Build linux binder
+- [Acronyms, Terms and Abbreviations](#acronyms-terms-and-abbreviations)
+- [Description](#description)
+- [Reference Documents](#reference-documents)
 
-The test suite depends on the Linux binder with `AIDL` support. Follow these steps to build it:
+## Acronyms, Terms and Abbreviations
 
-For detail build instruction, please refer to [Linux Binder](https://github.com/rdkcentral/linux_binder_idl)
+- `HAL` - Hardware Abstraction Layer
+- `L1` - Functional Tests
+- `L2` - Module functional Testing
+- `L3` - Module testing with External Stimulus is required to validate and control device
+- `API` - Application Programming Interface
+- `High-Level Test Specification` : This document provides a high-level view of test cases covered as part of `L2` and `L3` testing, focusing on major use cases, system behaviour, and overall test coverage.
+- `Low-Level Test Specification` : This document provides technical details of how the tests are implemented, including specific test cases with inputs, expected outputs, pass/fail criteria, and implementation specifics for individual functionalities, modules, or APIs.
 
-Here outline the simplest steps are
+## Description
 
-```bash
-git clone -b develop 'git@github.com:rdkcentral/linux_binder_idl.git'
+This repository contains the Test Suites(`L1` , `L2` and `L3`) for DEEPSLEEP `HAL`.
 
-cd linux_binder_idl
-sc docker run rdk-kirkstone /bin/bash
-./build-linux-binder-aidl.sh 64
-```
+## Reference Documents
 
-### 2. Build this test
-
-Clone and build the test suite:
-
-```bash
-git clone git@github.com:rdkcentral/rdk-halif-aidl-test-deepsleep.git
-```
-
-```bash
-cd rdk-halif-aidl-test-deepsleep
-```
-
-Set below environment variable:
-
-- AIDL_BIN: Path to the `AIDL` compiler (e.g., /path/to/linux_binder_idl/out/aidl).
-
-- LINUX_BINDER_OUT_DIR: Path to the Linux binder output directory (e.g., /path/to/linux_binder_idl/local).
-
-- UT_CORE_VERSION: Specific version of the UT-Core framework (e.g., 4.7.0). Defaults to the latest tagged version.
-
-- RDK_HALIF_AIDL_VERSION: Specific version of the AIDL HAL Specification (e.g, 0.7.1). Defaults to the latest HEAD.
-
-Example:
-
-```bash
-export UT_CORE_VERSION=4.7.0
-export RDK_HALIF_AIDL_VERSION=0.7.1
-export AIDL_BIN=/path/linux_binder_idl/out/aidl
-export LINUX_BINDER_OUT_DIR=/path/linux_binder_idl/local/
-```
-
-By default, UT logs are disabled. To enable them, Set below environment variable
-
-```bash
-export ENABLE_UT_INFO_LOGGING=1
-```
-
-Run the build script:
-
-```bash
-./build.sh Target=linux
-```
-
-The build.sh script:
-
-- Clones the `rdk-halif-aidl` repository and UT-Core framework.
-
-- Compiles the test suite.
-
-- Generates binaries in the `build/bin` directory.
-
-- Also generates `vts-deepsleep.tar.gz` tar ball in `build/bin` folder
-
-## Run test
-
-- Transfer to Target Device:
-
-Copy the tarball to the target device (e.g., using scp):
-
-```bash
-scp -p <port> vts-deepsleep.tar.gz root@target-device:/home/root/
-
-```
-
-- Extract on Target Device:
-
-Log into the target device and extract the tarball:
-
-```bash
-ssh root@target-device
-cd /home/root
-mkdir deepsleep
-tar -zxf vts-deepsleep.tar.gz -C deepsleep
-cd deepsleep
-```
-
-- Run the VTS Test on Target Device
-
-Run below command to execute the VTS Test:
-
-```bash
-./run.sh -p profiles/hfp-deepsleep-vcomponent.yaml
-```
+|SNo|Document Name|Document Description|Document Link|
+|---|-------------|--------------------|-------------|
+|1|`HAL` Specification Document|This document provides specific information on the APIs for which tests are written in this module|[HAL Interface](https://github.com/rdkcentral/rdk-halif-aidl/blob/0.13.1/README.md)|
+|2|High Level Test Specification|High Level Test Specification Documentation for the `DEEPSLEEP`|[deepsleep_High-Level_TestSpecification.md](docs/pages/deepsleep_High-Level_TestSpecification.md )||
+|3|`L2` Low Level Test Specification|`L2` Low Level Test Specification and Procedure Documentation for the `DEEPSLEEP`|[deepsleep_L2_Low-Level_TestSpecification.md](docs/pages/deepsleep_L2_Low-Level_TestSpecification.md)|
+|4|`L3` Low Level Test Specification|`L3` Low Level Test Specification for the `DEEPSLEEP`|[deepsleep_L3_Low-Level_TestSpecification.md](docs/pages/deepsleep_L3_Low-Level_TestSpecification.md)|
+|5|`L1` `L2` and `L3` Test procedure document|This document contains Build Instructions and `L1` `L2` and `L3` Test procedure for the `DEEPSLEEP`|[vts_deepsleep_L1_L2_L3_TestProcedure.md](docs/pages/vts_deepsleep_L1_L2_L3_TestProcedure.md)|

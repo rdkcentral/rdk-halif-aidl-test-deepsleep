@@ -119,6 +119,17 @@ bool isTriggerSupported (std::vector<WakeUpTrigger>& triggerlist, WakeUpTrigger 
         return true;
     }
 }
+
+WakeUpTrigger fromString(const std::string& str) {
+    using namespace com::rdk::hal::deepsleep;
+    for (WakeUpTrigger val : ::android::internal::enum_values<WakeUpTrigger>) {
+        if (toString(val) == str) {
+            return val;
+        }
+    }
+    UT_LOG_ERROR("invalid WakeUpTrigger string %s", str.c_str());
+    return WakeUpTrigger::ERROR_UNKNOWN;
+}
 /** @} */ // End of DEEPSLEEP_HALTEST_HELPER
 /** @} */ // End of DEEPSLEEP_HALTEST
 /** @} */ // End of DEEPSLEEP
