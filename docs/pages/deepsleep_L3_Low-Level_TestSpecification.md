@@ -34,7 +34,7 @@ The goal is to ensure that:
 ### References
 
 - `High Level Test Specification` - [deepsleep_High-Level_TestSpecification.md](deepsleep_High-Level_TestSpecification.md)
-- [DEEPSLEEP AIDL interface](https://github.com/rdkcentral/rdk-halif-aidl/tree/0.13.1/deepsleep/current/com/rdk/hal/deepsleep)
+- [DEEPSLEEP AIDL interface](https://github.com/rdkcentral/rdk-halif-aidl/tree/0.15.0/deepsleep/current/com/rdk/hal/deepsleep)
 
 ## Level 3 Test Specification
 
