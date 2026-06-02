@@ -42,14 +42,14 @@ class  VTS_DEEPSLEEP_L3_NoWakeFromUnspecifiedOrUnsupportedTrigger(deepsleepHelpe
     """
     Runs L3 NoWakeFromUnspecifiedOrUnsupportedTrigger test
     """
-    def __init__(self, log:logModule=None):
+    def __init__(self, log:logModule=None, hfpfile:str=None, testMenuConfigFile=None, moduleName=None, artifactDirPath=None):
         """
         Initializes the test class
         """
         self.testName = "DeepSleep_L3_NoWakeFromUnspecifiedOrUnsupportedTrigger"
         qcId = "1"
 
-        super().__init__(self.testName, qcId, log)
+        super().__init__(self.testName, qcId, log, hfpfile, testMenuConfigFile, moduleName, artifactDirPath)
 
     def wakeuptriggerThreadLocal(self, trigger: str, wakeusingtrigger: str, threadwaittime: int=5):
         """
@@ -92,7 +92,7 @@ class  VTS_DEEPSLEEP_L3_NoWakeFromUnspecifiedOrUnsupportedTrigger(deepsleepHelpe
         threadwaittime = 5
         unsupportedtrigger = [x for x in availabletriggers if x not in supported_triggers]
         keycode = self.cpe.get("remote").get("deepsleep").get(supported_triggers[0])
-        self.updateTestconfigurationFile(supported_triggers, outputlist, 10, threadwaittime, keycode)
+        self.updateTestconfigurationFile(supported_triggers, outputlist, 15, threadwaittime, keycode)
         self.utilities.sftpCopy(self.hal_session, self.l3TestConfigFile, self.l3TestConfigFolder)
         for trigger in unsupportedtrigger:
             self.wakeuptriggerThreadObj1 = threading.Thread(target=self.wakeuptriggerThreadLocal, args=(trigger, supported_triggers[0], threadwaittime))
