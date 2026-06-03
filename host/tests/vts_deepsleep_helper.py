@@ -133,13 +133,6 @@ class deepsleepHelperClass(utHelperClass):
             self.targetWorkspace = os.path.join(self.targetWorkspace, "bin")
             self.targetWorkspace = self.targetWorkspace.replace("\\", "/")
 
-        #TODO: remove once the vendor layer start handled by vDevice service
-        if (self.moduleName != "VTS"):
-            # Service start only needed while running individual tests, in unified case start_services.sh will take care of starting it
-            self.utilities.change_directory(self.hal_session_1, self.targetWorkspace)
-            self.hal_session_1.write(f"./{self.cpe.get('deepsleep_process_name')} &")
-            time.sleep(2)
-
         self.deepsleepDevice = DeepSleepController(self.platform, self.hal_session_1,
                                         prompt = self.cpe.get("prompt"), port = self.deviceTestSetup.get("deepsleep_controller_port"))
 
