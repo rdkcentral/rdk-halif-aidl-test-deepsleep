@@ -60,8 +60,6 @@ Set the following environment variables:
 
 - UT_CORE_VERSION: Specific version of the UT-Core framework (e.g., 4.7.0). Defaults to the latest tagged version.
 
-- VCOMPONENT_DEEPSLEEP_VERSION: Specific version of the DEEPSLEEP Virtual Component (e.g., 1.0.0). Defaults to the latest HEAD.
-
 - RDK_HALIF_AIDL_VERSION: Specific version of the AIDL HAL Specification (e.g., 0.12.0). Defaults to the latest HEAD.
 
 Example:
@@ -69,7 +67,6 @@ Example:
 ```bash
 export UT_CORE_VERSION=5.0.0
 export RDK_HALIF_AIDL_VERSION=0.15.0
-export VCOMPONENT_DEEPSLEEP_VERSION=0.1.0
 export AIDL_BIN=/path/to/linux_binder_idl/out/aidl
 export LINUX_BINDER_OUT_DIR=/path/to/linux_binder_idl/local/
 ```

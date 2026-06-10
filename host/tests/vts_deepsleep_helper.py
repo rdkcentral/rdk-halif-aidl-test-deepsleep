@@ -101,7 +101,7 @@ class deepsleepHelperClass(utHelperClass):
         self.power_level = 0.0
 
         # Establish HAL session
-        self.hal_session = self.dut.getConsoleSession("ssh_hal_test")
+        self.hal_session = self.dut.getConsoleSession("ssh_hal_test_0")
         self.hal_session_1 = self.dut.getConsoleSession("ssh_hal_test_1")
 
         # Initialize UT menu navigator and utilities
