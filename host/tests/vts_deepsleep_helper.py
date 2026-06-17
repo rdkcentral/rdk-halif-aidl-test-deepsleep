@@ -64,6 +64,7 @@ class deepsleepHelperClass(utHelperClass):
         # Parse device configuration
         self.deviceTestSetup = self.cpe.get("test")
         self.targetWorkspace = os.path.join(self.cpe.get("target_directory"), self.moduleName)
+        self.targetWorkspace = self.targetWorkspace.replace("\\", "/")
         profileFileFromConfig = self.deviceTestSetup.get("profile")
         # The moduleHFPFile should be the file available in deepsleep/profiles path
         profileFileTmp = hfpfile or profileFileFromConfig
@@ -116,6 +117,7 @@ class deepsleepHelperClass(utHelperClass):
             else:
                 # this if code part is for unifiedVTS
                 filesPath = os.path.join(artifactDirPath, artifact)
+            filesPath = filesPath.replace("\\", "/")
             self.hal_session.write("ls " + self.targetWorkspace + "/" + os.path.basename(artifact) + "\n")
             res = self.hal_session.read_until(self.hal_session.prompt, timeout=5)
             if "No such file or directory" not in res:
