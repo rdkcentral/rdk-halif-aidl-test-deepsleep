@@ -121,7 +121,7 @@ class  VTS_DEEPSLEEP_L3_NoWakeFromUnspecifiedOrUnsupportedTrigger(deepsleepHelpe
                 break
         outputlist = [supported_triggers[0]]
         keycode = self.cpe.get("remote").get("deepsleep").get(supported_triggers[0])
-        self.updateTestconfigurationFile(supported_triggers, outputlist, 10, threadwaittime, keycode)
+        self.updateTestconfigurationFile(supported_triggers, outputlist, 15, threadwaittime, keycode)
         self.utilities.sftpCopy(self.hal_session, self.l3TestConfigFile, self.l3TestConfigFolder)
 
         for trigger in unspecifiedtrigger:
