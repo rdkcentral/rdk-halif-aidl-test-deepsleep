@@ -88,7 +88,7 @@ const ut_control_keyStringMapping_t statusDeepSleepException_mapTable[] =
     {NULL, -1}
 };
 
-std::string vecIntToString(std::vector<int32_t>& addrs)
+std::string deepsleepVecIntToString(std::vector<int32_t>& addrs)
 {
     std::string s;
     for (size_t i = 0; i < addrs.size(); ++i)

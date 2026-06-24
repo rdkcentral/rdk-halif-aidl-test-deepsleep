@@ -42,14 +42,14 @@ class  VTS_DEEPSLEEP_L3_VerifyWakeWithMixedInputTriggerList(deepsleepHelperClass
     """
     Runs L3 VerifyWakeWithMixedInputTriggerList test
     """
-    def __init__(self, log:logModule=None):
+    def __init__(self, log:logModule=None, hfpfile:str=None, testMenuConfigFile=None, moduleName=None, artifactDirPath=None):
         """
         Initializes the test class
         """
         self.testName = "DeepSleep_L3_VerifyWakeWithMixedInputTriggerList"
         qcId = "1"
 
-        super().__init__(self.testName, qcId, log)
+        super().__init__(self.testName, qcId, log, hfpfile, testMenuConfigFile, moduleName, artifactDirPath)
 
     def testFunction(self):
         """

@@ -40,7 +40,7 @@ class virtualDeepSleep(DeepSleepControllerInterface):
     """
     DEEPSLEEP related utility functions
     """
-    def __init__(self, session, prompt: str="~#", port:int=8080):
+    def __init__(self, session, process_name: str="", bin_path: str="", prompt: str="~#", port:int=8080):
         """
         Initializes the class
         """
@@ -49,15 +49,7 @@ class virtualDeepSleep(DeepSleepControllerInterface):
         self.commandPrompt = prompt
         self.utilities = utBaseUtils()
 
-        self.deepsleepVcomponentConfigFile = os.path.join(dir_path, "../../vcomponent/vcomponent_configurations/deepsleep_vcomponent_configuration.yaml")
-        # Load the HDMI CEC device network configuration file
-        with open(self.deepsleepVcomponentConfigFile, "r") as f:
-            config_dict = yaml.safe_load(f)
-
-        deepsleepVcomponentConfigString = yaml.dump(config_dict)
-        deepsleepVcomponentConfigString = deepsleepVcomponentConfigString.replace('"', '\\"')
         #self.utPlaneController = utPlaneController(self.session, port=self.port)
-        self.loadDeepsleepDeviceNetworkConfiguration(deepsleepVcomponentConfigString)
 
     def loadDeepsleepDeviceNetworkConfiguration(self, configString: str):
         """
