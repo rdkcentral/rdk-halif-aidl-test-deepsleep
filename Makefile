@@ -22,7 +22,7 @@ TARGET ?= linux
 VARIANT := CPP
 
 ROOT_DIR := $(CURDIR)
-DEEPSLEEP_TEST_DIR :=  $(ROOT_DIR)/src
+DEEPSLEEP_TEST_DIR := $(ROOT_DIR)/src
 
 BIN_DIR := $(ROOT_DIR)/build/bin
 LIB_DIR := $(ROOT_DIR)/build/$(TARGET)/lib
@@ -68,8 +68,7 @@ endif
 SRC_DIRS := $(DEEPSLEEP_TEST_DIR)
 SRC_DIRS += $(ROOT_DIR)/test
 
-INC_DIRS := $(ROOT_DIR)/build/current/h/
-INC_DIRS += $(ROOT_DIR)/build/usr/include
+INC_DIRS := $(ROOT_DIR)/build/usr/include
 INC_DIRS += $(SRC_DIRS)
 
 XLDFLAGS := -L$(ROOT_DIR)/build/usr/lib
@@ -106,3 +105,5 @@ $(TARGET_EXEC):
 
 clean:
 	make -C $(UT_CORE_DIR) -j TARGET=$(TARGET) VARIANT=$(VARIANT) clean
+	rm -rf $(DEEPSLEEP_TEST_DIR)/*.o
+	rm -rf $(ROOT_DIR)/test/*.o

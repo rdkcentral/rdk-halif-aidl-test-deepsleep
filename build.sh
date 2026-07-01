@@ -1,24 +1,24 @@
 #!/bin/bash
-#** *****************************************************************************
-# *
-# * If not stated otherwise in this file or this component's LICENSE file the
-# * following copyright and licenses apply:
-# *
-# * Copyright 2026 RDK Management
-# *
-# * Licensed under the Apache License, Version 2.0 (the "License");
-# * you may not use this file except in compliance with the License.
-# * You may obtain a copy of the License at
-# *
-# * http://www.apache.org/licenses/LICENSE-2.0
-# *
-# * Unless required by applicable law or agreed to in writing, software
-# * distributed under the License is distributed on an "AS IS" BASIS,
-# * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# * See the License for the specific language governing permissions and
-# * limitations under the License.
-# *
 #* ******************************************************************************
+#*  If not stated otherwise in this file or this component's LICENSE
+#*  file the following copyright and licenses apply:
+#*
+#*  Copyright 2026 RDK Management
+#*
+#*  Licensed under the Apache License, Version 2.0 (the License);
+#*  you may not use this file except in compliance with the License.
+#*  You may obtain a copy of the License at
+#*
+#*  http://www.apache.org/licenses/LICENSE-2.0
+#*
+#*  Unless required by applicable law or agreed to in writing, software
+#*  distributed under the License is distributed on an AS IS BASIS,
+#*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#*  See the License for the specific language governing permissions and
+#*  limitations under the License.
+#*
+#* ******************************************************************************
+
 # Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -31,7 +31,6 @@ declare -r TOP=`dirname $(realpath $0)`
 declare -r HALIF_VERSION=current
 RDK_HALIF_AIDL_VERSION="${RDK_HALIF_AIDL_VERSION="main"}"
 RDK_HALIF_TEST_BASE_URL="https://github.com/rdkcentral/rdk-halif-binder-test-"
-OUT_TAR_FILE=vts-deepsleep.tar.gz
 
 declare -A HALIF_COMPONENTS=(
   [deepsleep]="current"
@@ -44,85 +43,176 @@ declare -A HALIF_TEST_COMPONENTS=(
 # Define the directory where the repository will be cloned
 declare -r UT_CORE_DIR="${TOP}/ut-core"
 declare -r TOP_BUILD_DIR="${TOP}/build"
-declare -r COMMON_DIR="${TOP}/common"
 declare -r BUILD_INSTALL_PREFIX=${TOP_BUILD_DIR}/usr
 declare -r AIDL_LIB_DIR=${TOP}/aidl_lib
 declare -r RDK_HAL_DIR=${TOP}/rdk-halif-aidl
-declare -r RDK_HAL_TEST_DIR=${TOP}/vts_hal_test_components
 declare -r PROFILES_DIR=${TOP}/profiles
-declare -r AV_L4_TEST_DIR=${RDK_HAL_TEST_DIR}/av_l4_tests
 
-DEF_LINUX_BINDER="`realpath ${TOP}/../`/linux_binder_idl"
-# AIDL_BIN: path of aidl compiler
-AIDL_BIN=${AIDL_BIN:-${DEF_LINUX_BINDER}/out/aidl}
-# LINUX_BINDER_OUT_DIR: output installed after building linux_binder_idl
-# contains bin/servicemanager, lib/libbinder etc
-LINUX_BINDER_OUT_DIR=${LINUX_BINDER_OUT_DIR:-${DEF_LINUX_BINDER}/local}
+OUT_TAR_FILE=vts-deepsleep.tar.gz
+
+LOCAL_BINDER_SDK_DIR=${BINDER_SDK_DIR:-${RDK_HAL_DIR}/out/target}
+LOCAL_BINDER_INCLUDE_DIR=${BINDER_SDK_INCLUDE_DIR:-${RDK_HAL_DIR}/out/build/include/binder_sdk}
+LOCAL_BINDER_LIB_DIR=${BINDER_SDK_LIB_DIR:-${LOCAL_BINDER_SDK_DIR}/lib/binder}
 
 mkdir -p $TOP_BUILD_DIR
 
-if [ ! -x $AIDL_BIN ]; then
-    echo -e "${BOLD}╔═════════════════════════════════════════════════════════════════════════════════╗${RESET}"
-    echo -e "${BOLD}  ${RED}AIDL_BIN - ${AIDL_BIN}: path does not exists. Exiting.${RESET}"
-    echo -e "${BOLD}╚═════════════════════════════════════════════════════════════════════════════════╝${RESET}"
-    exit 1
-fi
-if [ ! -d $LINUX_BINDER_OUT_DIR ]; then
-    echo -e "${BOLD}╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════╗${RESET}"
-    echo -e "${BOLD}  ${RED}LINUX_BINDER_OUT_DIR - ${LINUX_BINDER_OUT_DIR}: path does not exists. Exiting.${RESET}"
-    echo -e "${BOLD}╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════╝${RESET}"
+# Parse Target argument (e.g., Target=arm or target=linux)
+# Default to 'linux' if not provided
+TARGET="linux"
+
+###############################################################################
+# Function to validate TARGET option
+###############################################################################
+for arg in "$@"; do
+    if [[ $arg == [Tt]arget=* ]]; then
+        TARGET="${arg#*=}"
+    fi
+done
+
+# Validate TARGET
+valid_targets=("linux" "arm")
+if [[ ! " ${valid_targets[@]} " =~ " ${TARGET} " ]]; then
+    echo -e "${BOLD}${RED}Invalid Target: $TARGET. Valid targets are: ${valid_targets[@]}${RESET}"
+    help
     exit 1
 fi
 
-declare -r AIDL_BIN=`realpath ${AIDL_BIN}`
-declare -r LINUX_BINDER_OUT_DIR=`realpath ${LINUX_BINDER_OUT_DIR}`
-
 ###############################################################################
-# Function to install linux-binder service manager, headers, and libraries
+# Function to validate or stage the local Binder SDK via rdk-halif-aidl/build_binder.sh
 ###############################################################################
-install_linux_binder()
+verify_local_binder_sdk()
 {
-    echo "Install linux-binder 'service manager, headers and libraries'"
-    install -d ${BUILD_INSTALL_PREFIX}/bin ${BUILD_INSTALL_PREFIX}/lib ${BUILD_INSTALL_PREFIX}/include
-    install -t ${BUILD_INSTALL_PREFIX}/bin ${LINUX_BINDER_OUT_DIR}/bin/*
-    install -t ${BUILD_INSTALL_PREFIX}/lib ${LINUX_BINDER_OUT_DIR}/lib/*
-    cp -apr ${LINUX_BINDER_OUT_DIR}/include/* ${BUILD_INSTALL_PREFIX}/include/
+    # rdk-halif-aidl must be cloned first — build_binder.sh lives inside it
+    if [ ! -d "${RDK_HAL_DIR}" ]; then
+        echo "Cloning rdk-halif-aidl (${RDK_HALIF_AIDL_VERSION}) to obtain build_binder.sh..."
+        git clone -b "${RDK_HALIF_AIDL_VERSION}" 'https://github.com/rdkcentral/rdk-halif-aidl.git' "${RDK_HAL_DIR}" || {
+            echo -e "${BOLD}${RED}ERROR: Failed to clone rdk-halif-aidl.${RESET}"
+            exit 1
+        }
+    fi
+
+    local sdk_ready="${LOCAL_BINDER_SDK_DIR}/.sdk_ready"
+    local binder_builder="${RDK_HAL_DIR}/build_binder.sh"
+
+    if [ ! -f "${sdk_ready}" ]; then
+        echo -e "${BOLD}${YELLOW}Local Binder SDK not staged. Bootstrapping via ${binder_builder}${RESET}"
+        ( cd "${RDK_HAL_DIR}" && bash build_binder.sh )
+        if [ $? -ne 0 ] || [ ! -f "${sdk_ready}" ]; then
+            echo -e "${BOLD}${RED}ERROR: Local Binder SDK is not staged at ${LOCAL_BINDER_SDK_DIR}${RESET}"
+            exit 1
+        fi
+    fi
+
+    if [ ! -d "${LOCAL_BINDER_INCLUDE_DIR}" ]; then
+        echo -e "${BOLD}${RED}ERROR: Local Binder headers not found: ${LOCAL_BINDER_INCLUDE_DIR}${RESET}"
+        exit 1
+    fi
+
+    if [ ! -d "${LOCAL_BINDER_LIB_DIR}" ]; then
+        echo -e "${BOLD}${RED}ERROR: Local Binder libraries not found: ${LOCAL_BINDER_LIB_DIR}${RESET}"
+        exit 1
+    fi
 }
 
 ###############################################################################
-# Function to checkout the halif aidl repository and convert the aidl files
-# to C++ headers
+# Install Binder service manager, headers and libraries into build/usr/ from
+# the rdk-halif-aidl Binder SDK (built by verify_local_binder_sdk).
+# Must be called after verify_local_binder_sdk().
 ###############################################################################
-generate_hal_interfaces()
+install_linux_binder()
+{
+    local BINDER_SDK="${LOCAL_BINDER_SDK_DIR}"
+
+    echo "Installing binder service manager, headers and libraries..."
+    install -d ${BUILD_INSTALL_PREFIX}/bin ${BUILD_INSTALL_PREFIX}/lib ${BUILD_INSTALL_PREFIX}/include
+
+    if [ -d "${BINDER_SDK}/bin" ]; then
+        find "${BINDER_SDK}/bin" -maxdepth 1 -type f -executable \
+            -exec install -t ${BUILD_INSTALL_PREFIX}/bin {} \; 2>/dev/null || true
+    fi
+
+    if [ -d "${BINDER_SDK}/lib/binder" ]; then
+        find "${BINDER_SDK}/lib/binder" -maxdepth 1 \( -name "*.so" -o -name "*.so.*" \) \
+            -exec install -t ${BUILD_INSTALL_PREFIX}/lib {} \; 2>/dev/null || true
+    fi
+
+    if [ -d "${LOCAL_BINDER_INCLUDE_DIR}" ]; then
+        cp -apr "${LOCAL_BINDER_INCLUDE_DIR}/." ${BUILD_INSTALL_PREFIX}/include/
+    fi
+
+    # Bundle host libstdc++ so the binary runs on targets with older system libs
+    # (avoids GLIBCXX_x.x.xx not found errors at runtime)
+    local libstdcpp
+    libstdcpp=$(realpath "$(g++ -print-file-name=libstdc++.so.6)" 2>/dev/null)
+    if [ -f "${libstdcpp}" ]; then
+        install -t ${BUILD_INSTALL_PREFIX}/lib "${libstdcpp}"
+        # Create the soname symlink (libstdc++.so.6) that the dynamic linker looks for
+        local libstdcpp_basename
+        libstdcpp_basename=$(basename "${libstdcpp}")
+        ln -sf "${libstdcpp_basename}" "${BUILD_INSTALL_PREFIX}/lib/libstdc++.so.6"
+        echo "Bundled host libstdc++: ${libstdcpp}"
+    fi
+}
+
+###############################################################################
+# Function to clone rdk-halif-aidl and resolve versioned src/include dirs
+###############################################################################
+resolve_halif_versions()
 {
     # Clone the repository if not already present
     if [ ! -d "$RDK_HAL_DIR" ]; then
-        echo "Checking out version: " $RDK_HALIF_AIDL_VERSION
-        git clone -b $RDK_HALIF_AIDL_VERSION 'http://git@github.com/rdkcentral/rdk-halif-aidl.git' $RDK_HAL_DIR
-    fi
-
-    # Iterate through the HALIF compoenents
-    for component in "${!HALIF_COMPONENTS[@]}"; do
-        version=${HALIF_COMPONENTS[$component]}
-        echo "Component: $component, Version: $version"
-
-        HAL_TOP_BUILD_DIR=${TOP_BUILD_DIR}/${component}_aidl
-        AIDL_GEN_DIR="${TOP_BUILD_DIR}/$HALIF_VERSION"
-
-        cmake \
-        -DAIDL_BIN=$AIDL_BIN \
-        -DAIDL_GEN_DIR=$AIDL_GEN_DIR \
-        -DAIDL_SRC_VERSION=$version \
-        -DAIDL_TARGET=$component  \
-        -B ${HAL_TOP_BUILD_DIR} \
-        $RDK_HAL_DIR
+        echo "Checking out version: $RDK_HALIF_AIDL_VERSION"
+        git clone -b $RDK_HALIF_AIDL_VERSION 'https://github.com/rdkcentral/rdk-halif-aidl.git' $RDK_HAL_DIR
         if [ $? -ne 0 ]; then
             echo -e "${BOLD}╔══════════════════════════════════════════════╗${RESET}"
-            echo -e "${BOLD}* ${RED}Failed to Convert AIDL files. Exiting.${RESET}"
+            echo -e "${BOLD}* ${RED}Failed to clone rdk-halif-aidl. Exiting.${RESET}"
             echo -e "${BOLD}╚══════════════════════════════════════════════╝${RESET}"
             exit 1
         fi
+    fi
+
+    for component in "${!HALIF_COMPONENTS[@]}"; do
+        local metadata="${RDK_HAL_DIR}/${component}/metadata.yaml"
+        if [ ! -f "$metadata" ]; then
+            echo -e "${BOLD}${RED}ERROR: metadata.yaml not found: ${metadata}${RESET}"
+            exit 1
+        fi
+
+        local version
+        version=$(grep -m1 '^version:' "$metadata" | awk '{print $2}')
+        if [ -z "$version" ]; then
+            echo -e "${BOLD}${RED}ERROR: Could not parse version from ${metadata}${RESET}"
+            exit 1
+        fi
+
+        local inc_dir="${RDK_HAL_DIR}/${component}/${version}/include"
+        local src_dir="${RDK_HAL_DIR}/${component}/${version}/src"
+
+        if [ ! -d "$inc_dir" ]; then
+            echo -e "${BOLD}${RED}ERROR: versioned include dir not found: ${inc_dir}${RESET}"
+            exit 1
+        fi
+        if [ ! -d "$src_dir" ]; then
+            echo -e "${BOLD}${RED}ERROR: versioned src dir not found: ${src_dir}${RESET}"
+            exit 1
+        fi
+
+        echo -e "${BOLD}${GREEN}${component}${RESET}: version=${YELLOW}${version}${RESET}"
+        HALIF_AIDL_SRC_DIR=$(realpath "$src_dir")
+        HALIF_AIDL_INC_DIR=$(realpath "$inc_dir")
     done
+}
+
+###############################################################################
+# Install HALIF pre-generated headers into build/usr/include/
+###############################################################################
+install_halif_headers()
+{
+    echo "Installing HALIF headers..."
+    install -d ${BUILD_INSTALL_PREFIX}/include
+    if [ -d "${HALIF_AIDL_INC_DIR}" ]; then
+        cp -apr "${HALIF_AIDL_INC_DIR}/." "${BUILD_INSTALL_PREFIX}/include/"
+    fi
 }
 
 ###############################################################################
@@ -130,16 +220,18 @@ generate_hal_interfaces()
 ###############################################################################
 build_aidl_libs()
 {
-    pushd ${AIDL_LIB_DIR}
-    make -j`nproc`
+    make -j`nproc` -C "${AIDL_LIB_DIR}" TARGET=$TARGET VARIANT=CPP \
+        HALIF_AIDL_SRC_DIR="${HALIF_AIDL_SRC_DIR}" \
+        HALIF_AIDL_INC_DIR="${HALIF_AIDL_INC_DIR}" \
+        BINDER_SDK_INCLUDE_DIR="${LOCAL_BINDER_INCLUDE_DIR}" \
+        BINDER_SDK_LIB_DIR="${LOCAL_BINDER_LIB_DIR}"
     if [ $? -ne 0 ]; then
         echo -e "${BOLD}╔══════════════════════════════════════════════╗${RESET}"
-        echo -e "${BOLD}* ${RED}Failed to build the AIDL Lib. Exiting.${RESET}       ${BOLD}*${RESET}"
+        echo -e "${BOLD}* ${RED}Failed to build the AIDL Lib. Exiting.${RESET}"
         echo -e "${BOLD}╚══════════════════════════════════════════════╝${RESET}"
         exit 1
     fi
     echo "AIDL Build completed successfully."
-    popd
 }
 
 ###############################################################################
@@ -150,7 +242,9 @@ build_ut_core()
     if [ ! -d ${UT_CORE_DIR} ]; then
         git clone https://github.com/rdkcentral/ut-core.git ${UT_CORE_DIR}
         if [ $? -ne 0 ]; then
-            echo "Failed to clone the repository. Exiting."
+            echo -e "${BOLD}╔══════════════════════════════════════════════╗${RESET}"
+            echo -e "${BOLD}* ${RED}Failed to clone ut-core.${RESET}"
+            echo -e "${BOLD}╚══════════════════════════════════════════════╝${RESET}"
             exit 1
         fi
     fi
@@ -177,7 +271,6 @@ build_ut_core()
 
 }
 
-
 ###############################################################################
 # Function to Build HALIF test
 ###############################################################################
@@ -186,9 +279,9 @@ build_halif_test()
     # Build the tests
     make -j`nproc` -C ${TOP}
     if [ $? -ne 0 ]; then
-        echo -e "${BOLD}╔════════════════════════════════════════════╗${RESET}"
+        echo -e "${BOLD}╔═════════════════════════════════════════════════╗${RESET}"
         echo -e "${BOLD}* ${RED}Failed to build the main tests. Exiting.${RESET}"
-        echo -e "${BOLD}╚════════════════════════════════════════════╝${RESET}"
+        echo -e "${BOLD}╚═════════════════════════════════════════════════╝${RESET}"
         exit 1
     fi
 }
@@ -203,6 +296,17 @@ install_test()
     install -t ${INSTALL_PATH} ${TOP_BUILD_DIR}/usr/bin/*
     install -t ${INSTALL_PATH} ${TOP_BUILD_DIR}/usr/lib/*
     install -t ${INSTALL_PATH} run.sh
+
+    # Remove bundled binder runtime libs — the target's system libbinder.so is
+    # compatible with its kernel binder driver. Bundling our compiled version
+    # causes a kernel/userspace protocol mismatch at runtime.
+    rm -f "${INSTALL_PATH}"/libbinder.so* \
+          "${INSTALL_PATH}"/libutils.so* \
+          "${INSTALL_PATH}"/libbase.so* \
+          "${INSTALL_PATH}"/libcutils.so* \
+          "${INSTALL_PATH}"/libcutils_sockets.so* \
+          "${INSTALL_PATH}"/liblog.so* \
+          "${INSTALL_PATH}"/servicemanager
 
     cp -r ${PROFILES_DIR} ${INSTALL_PATH}
     cp -r "${TOP}/test_configuration" ${INSTALL_PATH}
@@ -219,10 +323,9 @@ clean_test()
 {
     echo -e "${BOLD}removing *.o${RESET}"
 
-    rm -rf test/*.o
-    rm -rf ${TOP}/src/*.o
-    make -C ${AIDL_LIB_DIR} clean
     make clean
+    make -C ${AIDL_LIB_DIR} clean
+
     rm -rf ${TOP_BUILD_DIR}/bin/${OUT_TAR_FILE}
 }
 
@@ -235,6 +338,10 @@ dist_clean_test()
     rm -rf $TOP_BUILD_DIR
     rm -rf $RDK_HAL_DIR
     rm -rf ${UT_CORE_DIR}
+    rm -f  "${TOP}/build_binder.sh"
+    rm -f  "${TOP}/binder_sdk.version"
+    rm -rf "${TOP}/build-tools"
+    rm -rf "${TOP}/out"
 }
 
 ###############################################################################
@@ -252,12 +359,10 @@ help()
     echo -e "${BOLD}╚════════════════════════════════════════════════════════════════════════════════╝${RESET}"
 }
 
-
-echo -e "${BOLD}${GREEN}VTS Version            : ${RESET}${YELLOW}$(git rev-parse --abbrev-ref HEAD)${RESET}"
-echo -e "${BOLD}${GREEN}UT_CORE_VERSION        : ${RESET}${YELLOW}$UT_CORE_VERSION${RESET}"
-echo -e "${BOLD}${GREEN}RDK_HALIF_AIDL_VERSION : ${RESET}${YELLOW}$RDK_HALIF_AIDL_VERSION${RESET}"
-echo -e "${BOLD}${GREEN}AIDL_BIN               : ${RESET}${YELLOW}$AIDL_BIN${RESET}"
-echo -e "${BOLD}${GREEN}LINUX_BINDER_OUT_DIR   : ${RESET}${YELLOW}$LINUX_BINDER_OUT_DIR${RESET}"
+echo -e "${BOLD}${GREEN}VTS Version                  : ${RESET}${YELLOW}$(git rev-parse --abbrev-ref HEAD)${RESET}"
+echo -e "${BOLD}${GREEN}UT_CORE_VERSION              : ${RESET}${YELLOW}$UT_CORE_VERSION${RESET}"
+echo -e "${BOLD}${GREEN}RDK_HALIF_AIDL_VERSION       : ${RESET}${YELLOW}$RDK_HALIF_AIDL_VERSION${RESET}"
+echo -e "${BOLD}${GREEN}LOCAL_BINDER_SDK_DIR         : ${RESET}${YELLOW}$LOCAL_BINDER_SDK_DIR${RESET}"
 
 ###############################################################################
 # Main script execution starts here
@@ -269,8 +374,10 @@ elif [ "$1" == "dist_clean" ]; then
 elif [ "$1" == "help" ]; then
     help
 elif [[ "$1" == [Tt]arget=* ]]; then
+    verify_local_binder_sdk
     install_linux_binder
-    generate_hal_interfaces
+    resolve_halif_versions
+    install_halif_headers
     build_aidl_libs
     build_ut_core
     build_halif_test
