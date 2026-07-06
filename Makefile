@@ -68,11 +68,17 @@ endif
 SRC_DIRS := $(DEEPSLEEP_TEST_DIR)
 SRC_DIRS += $(ROOT_DIR)/test
 
-INC_DIRS := $(ROOT_DIR)/build/usr/include
+INC_DIRS := $(ROOT_DIR)/build/current/h/
+INC_DIRS += $(ROOT_DIR)/build/usr/include
 INC_DIRS += $(SRC_DIRS)
 
 XLDFLAGS := -L$(ROOT_DIR)/build/usr/lib
 XLDFLAGS += -Wl,-rpath-link=$(ROOT_DIR)/build/usr/lib -Wl,--export-dynamic -Wl,-rpath,.
+# ARM openssl is built by ut-core; add its lib dir before -lssl/-lcrypto so the
+# linker resolves them against the ARM-built libs (not the host sysroot, which lacks
+# the inherited -lssl/-lcrypto flags which would otherwise fail to resolve).
+XLDFLAGS += -L$(ROOT_DIR)/ut-core/framework/ut-control/build/$(TARGET)/openssl/lib
+XLDFLAGS += -Wl,-rpath-link=$(ROOT_DIR)/ut-core/framework/ut-control/build/$(TARGET)/openssl/lib
 XLDFLAGS += -lssl -lcrypto -lbinder -lutils
 XLDFLAGS += -laidl_client
 
@@ -105,5 +111,3 @@ $(TARGET_EXEC):
 
 clean:
 	make -C $(UT_CORE_DIR) -j TARGET=$(TARGET) VARIANT=$(VARIANT) clean
-	rm -rf $(DEEPSLEEP_TEST_DIR)/*.o
-	rm -rf $(ROOT_DIR)/test/*.o

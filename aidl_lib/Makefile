@@ -23,45 +23,57 @@
 CXX ?= g++
 
 AIDL_LIB_NAME := aidl_client
+AIDL_LIB      := lib$(AIDL_LIB_NAME).so
 
-AIDL_LIB := lib$(AIDL_LIB_NAME).so
+BUILD_DIR    ?= $(CURDIR)/../build
+AIDL_OBJ_DIR := $(BUILD_DIR)/obj/aidl_lib
 
-BUILD_DIR ?= $(CURDIR)/../build
-
-# Versioned src/include dirs resolved from rdk-halif-aidl by build.sh
-# Guard errors so 'make clean' works without these being set
-ifneq ($(MAKECMDGOALS),clean)
-HALIF_AIDL_SRC_DIR ?= $(error HALIF_AIDL_SRC_DIR is not set - run via build.sh)
-HALIF_AIDL_INC_DIR ?= $(error HALIF_AIDL_INC_DIR is not set - run via build.sh)
+# Versioned src/include dirs resolved from rdk-halif-aidl by build.sh.
+# Guard errors so 'make clean' works without these being set.
+ifeq ($(filter clean,$(MAKECMDGOALS)),)
+HALIF_AIDL_SRC_DIR     ?= $(error HALIF_AIDL_SRC_DIR is not set - run via build.sh)
+HALIF_AIDL_INC_DIR     ?= $(error HALIF_AIDL_INC_DIR is not set - run via build.sh)
 BINDER_SDK_INCLUDE_DIR ?= $(error BINDER_SDK_INCLUDE_DIR is not set - run via build.sh)
-BINDER_SDK_LIB_DIR ?= $(error BINDER_SDK_LIB_DIR is not set - run via build.sh)
+BINDER_SDK_LIB_DIR     ?= $(error BINDER_SDK_LIB_DIR is not set - run via build.sh)
 
 # Source files from the versioned AIDL src directory
 AIDL_SRC := $(shell find $(HALIF_AIDL_SRC_DIR) -type f -name '*.cpp')
+AIDL_OBJ := $(patsubst $(HALIF_AIDL_SRC_DIR)/%.cpp,$(AIDL_OBJ_DIR)/%.o,$(AIDL_SRC))
 endif
 
-AIDL_LIB_INC_FLAGS := -I$(HALIF_AIDL_INC_DIR)
-AIDL_LIB_INC_FLAGS += -I$(BINDER_SDK_INCLUDE_DIR)
+AIDL_LIB_PATH := $(BUILD_DIR)/usr/lib/$(AIDL_LIB)
 
+# Include flags: versioned deepsleep headers, staged dep headers (common etc.
+# staged to build/usr/include by install_halif_headers in build.sh), and the
+# binder SDK.
+AIDL_LIB_INC_FLAGS := -I$(HALIF_AIDL_INC_DIR) \
+                      -I$(BUILD_DIR)/usr/include \
+                      -I$(BINDER_SDK_INCLUDE_DIR)
+
+# Link against binder runtime libs.
 AIDL_LIB_LD_LIBS := -lbinder -lutils
 
-AIDL_LIB_LDFLAGS := -L$(BINDER_SDK_LIB_DIR)
-AIDL_LIB_LDFLAGS += -Wl,-rpath-link=$(BINDER_SDK_LIB_DIR)
+AIDL_LIB_LDFLAGS := -L$(BUILD_DIR)/usr/lib \
+                    -Wl,-rpath-link=$(BUILD_DIR)/usr/lib \
+                    -L$(BINDER_SDK_LIB_DIR) \
+                    -Wl,-rpath-link=$(BINDER_SDK_LIB_DIR)
 
 AIDL_LIB_CFLAGS := -Wall -Wextra -std=c++17 -ggdb -fPIC
 
-AIDL_LIB := $(BUILD_DIR)/usr/lib/$(AIDL_LIB)
+# Default target
+all: $(AIDL_LIB_PATH)
 
-
-all: $(AIDL_LIB)
-
-$(AIDL_LIB): $(AIDL_SRC:%.cpp=%.o)
+# Build shared library
+$(AIDL_LIB_PATH): $(AIDL_OBJ)
 	mkdir -p $(dir $@)
 	$(CXX) -shared $(AIDL_LIB_LDFLAGS) $^ -o $@ $(AIDL_LIB_LD_LIBS)
 
-%.o: %.cpp
+# Compile objects
+$(AIDL_OBJ_DIR)/%.o: $(HALIF_AIDL_SRC_DIR)/%.cpp
+	mkdir -p $(dir $@)
 	$(CXX) $(AIDL_LIB_CFLAGS) $(AIDL_LIB_INC_FLAGS) -c $< -o $@
 
+# Clean target
 clean:
 	rm -f $(BUILD_DIR)/usr/lib/libaidl_client.so
-	find $(CURDIR) -name '*.o' -delete
+	rm -rf $(AIDL_OBJ_DIR)
