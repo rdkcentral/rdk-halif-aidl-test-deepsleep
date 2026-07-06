@@ -727,6 +727,8 @@ clean_test()
 {
     echo -e "${BOLD}removing *.o${RESET}"
 
+    rm -rf test/*.o
+    rm -rf ${TOP}/src/*.o
     make clean
     make -C ${AIDL_LIB_DIR} clean
 
