@@ -222,3 +222,30 @@ class virtualDeepSleep(DeepSleepControllerInterface):
         self.session.write(cmd)
 
         return True
+
+    def simulateError(self, error_type: str, exception: str) -> bool:
+        """
+        This function simulates an error condition.
+
+        Args:
+          error_type (str): Type of error to simulate. Valid values are:
+                            "BEFORE_DEEPSLEEP" - Simulate an error before entering deep sleep.
+                            "AFTER_DEEPSLEEP" - Simulate an error after waking from deep sleep.
+
+        Returns:
+          bool: True if the error simulation command was sent successfully, False otherwise.
+        """
+        yaml_content = (
+            "deepsleep:\n"
+            "  command: \"DEEPSLEEP_SIMULATE_ERROR\"\n"
+            f"  error_type: \"{error_type}\"\n"
+            "  return_code: false\n"
+            f"  exception: \"{exception}\"\n"
+        )
+
+        # Prepare the curl command
+        cmd = f'curl -X POST -H "Content-Type: application/x-yaml" --data-binary "{yaml_content}" "http://localhost:{self.port}/api/postKVP"'
+        print(cmd)
+        self.session.write(cmd)
+
+        return True
