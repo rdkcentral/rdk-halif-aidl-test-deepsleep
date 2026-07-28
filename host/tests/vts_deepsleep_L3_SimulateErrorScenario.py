@@ -59,7 +59,7 @@ class  VTS_DEEPSLEEP_L3_SimulateErrorScenario(deepsleepHelperClass):
             bool: Final result of the deep sleep test, including power-level validation.
         """
         self.utilities.change_directory(self.hal_session, self.targetWorkspace)
-        results = False
+        results = True
         self.testcase = "EnterDeepSleep"
 
         self.profileConfiguration = ConfigRead(self.moduleHFPFile, self.interfaceName)
@@ -75,11 +75,12 @@ class  VTS_DEEPSLEEP_L3_SimulateErrorScenario(deepsleepHelperClass):
             self.utMenu.start()
             self.log.stepStart(f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: {self.testcase}')
             output = self.utMenu.select(DEEPSLEEP_L3_TEST_SUITE_NAME, self.testcase, None, self.waitTime, False)
-            results = self.utMenu.collect_results(output, True)
-            if results is None:
-                results = False
-            self.log.stepResult(results, f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: {self.testcase}')
+            group_results = self.utMenu.collect_results(output, True)
+            if group_results is None:
+                group_results = False
+            self.log.stepResult(group_results, f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: {self.testcase}')
             self.deepsleepDevice.simulateError("", "")
+            results = results and group_results
 
         return results
 

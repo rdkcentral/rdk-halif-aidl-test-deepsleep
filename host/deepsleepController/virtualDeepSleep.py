@@ -245,7 +245,6 @@ class virtualDeepSleep(DeepSleepControllerInterface):
 
         # Prepare the curl command
         cmd = f'curl -X POST -H "Content-Type: application/x-yaml" --data-binary "{yaml_content}" "http://localhost:{self.port}/api/postKVP"'
-        print(cmd)
         self.session.write(cmd)
 
         return True
