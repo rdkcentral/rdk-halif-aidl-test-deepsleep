@@ -139,6 +139,11 @@ UT_ADD_TEST(VTS_L3_DEEPSLEEP, EnterDeepSleep)
     auto timeBeforeSleep = std::chrono::system_clock::now();
     DEEPSLEEP_ENTERDEEPSLEEP(gDEEPSLEEPHandle, testConfiguration.input_triggersToWakeUpon, wokeUpByTriggers, kCode, result);
     auto timeAfterSleep = std::chrono::system_clock::now();
+    if (testConfiguration.output.output_wokeUpByTriggers.empty()) {
+        UT_LOG_INFO("Expected wokeUpByTriggers list is empty, validating EnterDeepSleep reports failure\n");
+        UT_ASSERT_FALSE(result);
+        return;
+    }
     UT_ASSERT_TRUE(result);
     for (size_t i = 0; i < wokeUpByTriggers.size(); i++) {
         UT_LOG_INFO("wokeUpByTriggers(%d): %d", i, wokeUpByTriggers[i]);
