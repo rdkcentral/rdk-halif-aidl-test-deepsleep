@@ -22,6 +22,5 @@
 # HAL Feature Profile for deep_sleep
 
 deepsleep:                 # Component object begins
-    interfaceVersion: current
     bufferduration : 5 #seconds. It will differ based on the test environment(SOC and OS)
     expected_power_level: 1 #units in Watt
