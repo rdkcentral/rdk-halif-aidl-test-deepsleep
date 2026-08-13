@@ -57,7 +57,7 @@ class  VTS_DEEPSLEEP_L3_NoWakeFromUnspecifiedOrUnsupportedTrigger(deepsleepHelpe
         """
         time.sleep(threadwaittime)  # Wait for DUT to be ready to trigger wakeup
         self.deepsleepDevice.triggerWakeup(trigger)
-        buffertime = self.profileConfiguration.bufferduration
+        buffertime = self.vtsprofileConfiguration.bufferduration
         time.sleep(buffertime)  # Small delay between messages
         self.log.stepStart(f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: validate_no_wakeupfrom_{trigger}')
         result = True
