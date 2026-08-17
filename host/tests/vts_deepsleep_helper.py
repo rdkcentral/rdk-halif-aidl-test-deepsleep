@@ -41,7 +41,7 @@ from deepsleepController.DeepSleepController import DeepSleepController
 DEEPSLEEP_TEST_MENU_CONFIGURATION_FILE = os.path.join(dir_path, "vts_deepsleep_testMenuConfiguration.yaml")
 DEEPSLEEP_TESTCASES_CONFIGURATION_FILE = os.path.join(os.path.join(dir_path, "../configs"), "vts_deepsleep_testcase_configuration.yaml")
 DEEPSLEEP_L3_TEST_CONFIG_FILE = os.path.join(os.path.join(dir_path, "../../test_configuration"), "vts_l3_DeepSleep.yaml")
-DEEPSLEEP_VTS_HFP_FILE = os.path.join(os.path.join(dir_path, "../../profiles"), "hfp-deepsleep-vts.yaml")
+DEEPSLEEP_VTS_HFP_FILE = os.path.join(os.path.join(dir_path, "../../profiles"), "hfp-vts-deepsleep.yaml")
 
 DEEPSLEEP_L3_TEST_SUITE_NAME = "VTS_L3_DEEPSLEEP"
 
@@ -98,7 +98,7 @@ class deepsleepHelperClass(utHelperClass):
         self.testMenuConfiguration = ConfigRead(deepsleepTestMenuConfigFile, self.moduleName)
         if (self.moduleName != "VTS"):
             self.testCaseConfiguration = ConfigRead(DEEPSLEEP_TESTCASES_CONFIGURATION_FILE, self.moduleName) # Only needed while running individual tests
-        self.testMenuConfiguration.test.execute = self.testMenuConfiguration.test.execute + f" -p {profileOnTarget} -p {vtsprofileOnTarget}"
+        self.testMenuConfiguration.test.execute = self.testMenuConfiguration.test.execute + f" -p {profileOnTarget}"
         if (self.moduleName == "VTS"):
             self.l3TestConfigFolder = os.path.join(self.targetWorkspace, "bin", "test_configuration")
         else:
