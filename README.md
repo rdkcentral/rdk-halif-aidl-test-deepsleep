@@ -4,6 +4,7 @@
 
 - [Acronyms, Terms and Abbreviations](#acronyms-terms-and-abbreviations)
 - [Description](#description)
+- [Platform-Specific Configuration](#platform-specific-configuration)
 - [Reference Documents](#reference-documents)
 
 ## Acronyms, Terms and Abbreviations
@@ -19,6 +20,21 @@
 ## Description
 
 This repository contains the Test Suites(`L1` , `L2` and `L3`) for DEEPSLEEP `HAL`.
+
+## Platform-Specific Configuration
+
+The `profiles/` directory contains two HAL Feature Profile (`HFP`) files that must be reviewed and updated to match the target platform (`SOC`/`OS`) before running tests:
+
+### `profiles/hfp-deepsleep.yaml`
+
+This profile declares the platform capabilities which are `SOC`-specific and must reflect what the hardware actually supports.
+
+### `profiles/hfp-vts-deepsleep.yaml`
+
+This profile contains control parameters used during test execution:
+
+ `bufferduration`  `expected_power_level` - This varies based on `SOC` and `OS` and must be tuned for the target platform.
+
 
 ## Reference Documents
 
