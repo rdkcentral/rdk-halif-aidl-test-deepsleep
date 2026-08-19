@@ -102,9 +102,9 @@ cd /tmp/DeepSleep
 Run the following command to execute the VTS test:
 
 ```bash
-./run.sh -p profiles/hfp-deepsleep_vcomponent.yaml
+./run.sh -p profiles/hfp-vts-deepsleep.yaml -p profiles/hfp-deepsleep.yaml
 ```
-Note: The `bufferduration` in `profiles/hfp-deepsleep_vcomponent.yaml` needs to be updated based on the test environment(SOC and OS)
+Note: The `bufferduration` `expected_power_level` in `profiles/hfp-vts-deepsleep.yaml` needs to be updated based on the test environment(SOC and OS)
 
 ## Run Tests in Python Environment
 
@@ -190,7 +190,7 @@ deviceConfig:
         prompt: "~#" # Prompt string on console
         wait_time: 320 #Configurable timeout value to limit the total duration of individual tests. It will differ based on the test environment(SOC and OS)
         test:
-            profile: "../../profiles/hfp-deepsleep_vcomponent.yaml" #HFP profile used to meet platform requirements
+            profile: "../../profiles/hfp-deepsleep.yaml" #HFP profile used to meet platform requirements
             controller_port: 8080 # Port where the ut-controller is listening
         remote:
             deepsleep:
