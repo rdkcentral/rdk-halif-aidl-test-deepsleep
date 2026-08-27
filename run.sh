@@ -21,5 +21,7 @@
 
 RUN_DIR=$(realpath "$(dirname "$0")")
 
+export LD_LIBRARY_PATH=${RUN_DIR}:${LD_LIBRARY_PATH}
+
 echo "Executing [vts_deepsleep_hal_test]"
 "${RUN_DIR}/vts_deepsleep_hal_test" -p "profiles/hfp-vts-deepsleep.yaml" "$@"
