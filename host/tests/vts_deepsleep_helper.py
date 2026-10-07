@@ -30,13 +30,14 @@ import threading
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(dir_path, "../"))
+sys.path.append(dir_path)
 
 from raft.framework.plugins.ut_raft.configRead import ConfigRead
 from raft.framework.plugins.ut_raft import utHelperClass
 from raft.framework.core.logModule import logModule
 from raft.framework.plugins.ut_raft.utSuiteNavigator import UTSuiteNavigatorClass
 from raft.framework.plugins.ut_raft.utBaseUtils import utBaseUtils
-from deepsleepController.DeepSleepController import DeepSleepController
+from rdk_raft.controller import Controller
 
 DEEPSLEEP_TEST_MENU_CONFIGURATION_FILE = os.path.join(dir_path, "vts_deepsleep_testMenuConfiguration.yaml")
 DEEPSLEEP_TESTCASES_CONFIGURATION_FILE = os.path.join(os.path.join(dir_path, "../configs"), "vts_deepsleep_testcase_configuration.yaml")
@@ -140,8 +141,12 @@ class deepsleepHelperClass(utHelperClass):
             self.targetWorkspace = os.path.join(self.targetWorkspace, "bin")
             self.targetWorkspace = self.targetWorkspace.replace("\\", "/")
 
-        self.deepsleepDevice = DeepSleepController(self.platform, self.hal_session_1,
-                                        prompt = self.cpe.get("prompt"), port = self.deviceTestSetup.get("deepsleep_controller_port"))
+        self.deepsleepDevice = Controller.deep_sleep(
+            self.platform,
+            self.hal_session_1,
+            prompt=self.cpe.get("prompt"),
+            port=self.deviceTestSetup.get("deepsleep_controller_port"),
+        )
 
     def getPowerLevel(self) -> float:
         if (self.platform == "vDevice"):
