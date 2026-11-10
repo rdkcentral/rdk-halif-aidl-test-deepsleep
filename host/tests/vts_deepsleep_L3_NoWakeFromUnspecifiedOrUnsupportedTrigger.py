@@ -120,10 +120,9 @@ class  VTS_DEEPSLEEP_L3_NoWakeFromUnspecifiedOrUnsupportedTrigger(deepsleepHelpe
                 supported_triggers.remove(x)
                 break
         if not supported_triggers : 
-            results = "SKIPPED"
             self.log.stepStart(f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: {self.testcase}')
-            self.log.stepResult(results, f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: {self.testcase} SupportedTriggers doesnt have Trigger other than TIMER')
-            return results
+            self.log.stepResult("SKIPPED", f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: {self.testcase} SupportedTriggers doesnt have Trigger other than TIMER')
+            return results if unsupportedtrigger else "SKIPPED"
 
         outputlist = [supported_triggers[0]]
         keycode = self.cpe.get("remote").get("deepsleep").get(supported_triggers[0])
