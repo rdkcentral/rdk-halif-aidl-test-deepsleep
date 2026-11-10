@@ -82,6 +82,12 @@ class  VTS_DEEPSLEEP_L3_NoWakeFromUnspecifiedOrUnsupportedTrigger(deepsleepHelpe
         results = False
         self.testcase = "EnterDeepSleep"
 
+        if self.platform == "vDevice":
+            results = "SKIPPED"
+            self.log.stepStart(f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: {self.testcase}')
+            self.log.stepResult(results, f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: {self.testcase} SKIP test for vDevice')
+            return results
+            
         # test for unsupported triggers
         self.profileConfiguration = ConfigRead(self.moduleHFPFile, self.interfaceName)
         supported_triggers = self.profileConfiguration.supportedTriggers
