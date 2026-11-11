@@ -62,10 +62,10 @@ class  VTS_DEEPSLEEP_L3_WakeFromPreconfiguredTrigger(deepsleepHelperClass):
 
         self.profileConfiguration = ConfigRead(self.moduleHFPFile, self.interfaceName)
         preconfigured_triggers = self.profileConfiguration.preconfiguredTriggers
-        if len(preconfigured_triggers) == 1 and preconfigured_triggers == ["TIMER"]:
+        if not preconfigured_triggers or (len(preconfigured_triggers) == 1 and preconfigured_triggers == ["TIMER"]):
             results = "SKIPPED"
             self.log.stepStart(f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: {self.testcase}')
-            self.log.stepResult(results, f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: {self.testcase} SKIP test when only TIMER trigger present')
+            self.log.stepResult(results, f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: {self.testcase} SKIP test')
             return results
 
         for trigger in preconfigured_triggers:

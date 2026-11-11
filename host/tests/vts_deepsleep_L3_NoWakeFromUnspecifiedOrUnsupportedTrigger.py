@@ -86,12 +86,6 @@ class  VTS_DEEPSLEEP_L3_NoWakeFromUnspecifiedOrUnsupportedTrigger(deepsleepHelpe
         self.profileConfiguration = ConfigRead(self.moduleHFPFile, self.interfaceName)
         supported_triggers = self.profileConfiguration.supportedTriggers
 
-        if len(supported_triggers) == 1 and supported_triggers == ["TIMER"]:
-            results = "SKIPPED"
-            self.log.stepStart(f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: {self.testcase}')
-            self.log.stepResult(results, f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: {self.testcase} SKIP test when only TIMER trigger present')
-            return results
-
         # excluded TIMER
         availabletriggers = ["RCU_IR", "RCU_BT" , "RCU_RF4CE", "LAN", "WLAN", "FRONT_PANEL", "CEC", "PRESENCE", "VOICE"]
         outputlist = [supported_triggers[0]]
