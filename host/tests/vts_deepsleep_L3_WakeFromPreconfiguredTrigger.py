@@ -34,6 +34,8 @@ from raft.framework.plugins.ut_raft.utSuiteNavigator import UTSuiteNavigatorClas
 from raft.framework.plugins.ut_raft.utBaseUtils import utBaseUtils
 from vts_deepsleep_helper import deepsleepHelperClass
 
+DEEPSLEEP_L3_TEST_SUITE_NAME = "VTS_L3_DEEPSLEEP"
+
 class  VTS_DEEPSLEEP_L3_WakeFromPreconfiguredTrigger(deepsleepHelperClass):
     """
     Runs L3 WakeFromPreconfiguredTrigger test
@@ -60,6 +62,12 @@ class  VTS_DEEPSLEEP_L3_WakeFromPreconfiguredTrigger(deepsleepHelperClass):
 
         self.profileConfiguration = ConfigRead(self.moduleHFPFile, self.interfaceName)
         preconfigured_triggers = self.profileConfiguration.preconfiguredTriggers
+        if not preconfigured_triggers or (len(preconfigured_triggers) == 1 and preconfigured_triggers == ["TIMER"]):
+            results = "SKIPPED"
+            self.log.stepStart(f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: {self.testcase}')
+            self.log.stepResult(results, f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: {self.testcase} SKIP test')
+            return results
+
         for trigger in preconfigured_triggers:
             if (trigger == "TIMER") :
                 continue
