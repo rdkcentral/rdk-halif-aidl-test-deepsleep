@@ -63,7 +63,13 @@ class  VTS_DEEPSLEEP_L3_VerifyWakeWithMixedInputTriggerList(deepsleepHelperClass
         self.testcase = "EnterDeepSleep"
 
         self.profileConfiguration = ConfigRead(self.moduleHFPFile, self.interfaceName)
-        supported_triggers = supported_triggers = [x for x in self.profileConfiguration.supportedTriggers if x != "TIMER"]
+        supported_triggers = [x for x in self.profileConfiguration.supportedTriggers if x != "TIMER"]
+        if not supported_triggers:
+            results = "SKIPPED"
+            self.log.stepStart(f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: {self.testcase}')
+            self.log.stepResult(results, f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: {self.testcase} SKIP test when only TIMER trigger present')
+            return results
+
         inputlist = supported_triggers
         for trigger in supported_triggers:
             outputlist = [trigger]

@@ -64,6 +64,12 @@ class  VTS_DEEPSLEEP_L3_WakeFromSupportedTrigger(deepsleepHelperClass):
 
         self.profileConfiguration = ConfigRead(self.moduleHFPFile, self.interfaceName)
         supported_triggers = self.profileConfiguration.supportedTriggers
+        if len(supported_triggers) == 1 and supported_triggers == ["TIMER"]:
+            results = "SKIPPED"
+            self.log.stepStart(f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: {self.testcase}')
+            self.log.stepResult(results, f'Test Suit: {DEEPSLEEP_L3_TEST_SUITE_NAME} Test Case: {self.testcase} SKIP test when only TIMER trigger present')
+            return results
+
         for trigger in supported_triggers:
             if (trigger == "TIMER") :
                 continue

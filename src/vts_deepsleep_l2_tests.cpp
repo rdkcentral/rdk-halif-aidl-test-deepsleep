@@ -114,7 +114,7 @@ UT_ADD_TEST(VTS_L2_DEEPSLEEP, setgettimer)
     }
     int32_t gettime;
     bool result;
-    std::vector<int32_t> secondsValues = {604800, 3600, 1};
+    std::vector<int32_t> secondsValues = {604800, 3600, 1, 0};
     for (const auto& time : secondsValues) {
         DEEPSLEEP_SET_TIMER(gDEEPSLEEPHandle, time, result);
         DEEPSLEEP_GET_TIMER(gDEEPSLEEPHandle, gettime);
@@ -123,7 +123,7 @@ UT_ADD_TEST(VTS_L2_DEEPSLEEP, setgettimer)
             UT_ASSERT_EQUAL(gettime, time);
         } else {
             UT_ASSERT_FALSE(result);
-            UT_ASSERT_EQUAL(gettime, -1);
+            UT_ASSERT_EQUAL(gettime, 0);
         }
     }
     return;

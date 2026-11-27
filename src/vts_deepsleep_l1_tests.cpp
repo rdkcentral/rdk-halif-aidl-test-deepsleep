@@ -179,7 +179,7 @@ UT_ADD_TEST(VTS_L1_DEEPSLEEP, getCapabilities_pos)
 /**
  * @brief Validate the getWakeUpTimer API functionality.
  *
- * This test validates that getWakeUpTimer returns -1.
+ * This test validates that getWakeUpTimer returns 0.
  *
  * **Test Group ID:** Basic: 01@n
  * **Test Case ID:** 002@n
@@ -192,14 +192,14 @@ UT_ADD_TEST(VTS_L1_DEEPSLEEP, getCapabilities_pos)
  * **Test Procedure:**
  * | Variation / Step | Description | Test Data | Expected Result | Notes |
  * | :----: | --------- | ---------- |-------------- | ----- |
- * | 01 | Call getWakeUpTimer to retrieve the timer value where no timer period is set. | getWakeUpTimer output: timer | getWakeUpTimer returns -1| Should Pass |
- * | 02 | Verify timer value received is -1 | getWakeUpTimer output: timer , -1 | passes the assertion check.  | Should Pass |@n
+ * | 01 | Call getWakeUpTimer to retrieve the timer value where no timer period is set. | getWakeUpTimer output: timer | getWakeUpTimer returns 0| Should Pass |
+ * | 02 | Verify timer value received is 0 | getWakeUpTimer output: timer , 0 | passes the assertion check.  | Should Pass |@n
  */
 UT_ADD_TEST(VTS_L1_DEEPSLEEP, gettimer_pos)
 {
     int32_t time;
     DEEPSLEEP_GET_TIMER(gDEEPSLEEPHandle, time);
-    UT_ASSERT_EQUAL(time, -1);
+    UT_ASSERT_EQUAL(time, 0);
     return;
 }
 
@@ -234,7 +234,7 @@ UT_ADD_TEST(VTS_L1_DEEPSLEEP, settimer_pos)
         UT_LOG_INFO("TIMER trigger is not supported");
         supported = false;
     }
-    std::vector<int32_t> secondsValues = {604800, 3600, 1};
+    std::vector<int32_t> secondsValues = {604800, 3600, 1, 0};
     for (const auto& time : secondsValues) {
         DEEPSLEEP_SET_TIMER(gDEEPSLEEPHandle, time, result);
         if (supported) {
@@ -262,14 +262,14 @@ UT_ADD_TEST(VTS_L1_DEEPSLEEP, settimer_pos)
 * **Test Procedure:**
 * | Variation / Step | Description | Test Data | Expected Result | Notes |
 * | :----: | --------- | ---------- |-------------- | ----- |
-* | 01 | For each seconds value in the vector {0, -1, -10}, log the input parameters | seconds = 0, -1, -10 | Pre-call logging should indicate the input seconds value for each iteration | Should be successful |
+* | 01 | For each seconds value in the vector {-1, -10}, log the input parameters | seconds = -1, -10 | Pre-call logging should indicate the input seconds value for each iteration | Should be successful |
 * | 02 | Call the setWakeUpTimer API with the provided seconds value and capture the output in timerSuccess, while logging the result. | input: seconds = current value; output: timerSuccess | API should return status.isOk() as true and timerSuccess as false | Should Pass |
 * | 03 | Assert that the status returned by setWakeUpTimer is ok and that the timerSuccess flag is false. | input: status returned; output: status.isOk() = true, timerSuccess = false | Both assertions should pass, indicating correct API functionality | Should Pass |
 */
 UT_ADD_TEST(VTS_L1_DEEPSLEEP, settimer_neg)
 {
     bool result;
-    std::vector<int32_t> secondsValues = {0, -1, -10};
+    std::vector<int32_t> secondsValues = {-1, -10};
     for (const auto& time : secondsValues) {
         DEEPSLEEP_SET_TIMER(gDEEPSLEEPHandle, time, result);
         UT_ASSERT_FALSE(result);
